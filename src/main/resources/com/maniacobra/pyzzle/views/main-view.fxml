@@ -15,9 +15,10 @@
    <top>
       <MenuBar prefWidth="238.0" BorderPane.alignment="CENTER">
          <menus>
-            <Menu mnemonicParsing="false" onAction="#menuOpenFile" text="Fichier">
+            <Menu mnemonicParsing="false" text="Fichier">
                <items>
-                  <MenuItem mnemonicParsing="false" text="Ouvrir un pack d'exercices" />
+                  <MenuItem mnemonicParsing="false" onAction="#menuOpenFile" text="Ouvrir un pack d'exercices" />
+                  <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#menuSave" text="Sauvegarder" disable="true" />
                </items>
             </Menu>
          </menus>

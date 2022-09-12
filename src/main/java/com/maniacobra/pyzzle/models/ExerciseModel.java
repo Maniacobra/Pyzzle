@@ -79,6 +79,15 @@ public class ExerciseModel {
             i++;
         }
 
+        // Completion
+        if (config.completion() != null && config.completion().get("empty") == null) {
+            System.out.println(config);
+            JSONObject completion = config.completion();
+            attempts = Utils.getInt(completion, "attempts");
+            locked = (boolean) completion.get("locked");
+            score = ((Double) completion.get("score")).floatValue();
+        }
+
         // Score
         initialTotalScore = config.totalScore();
         maxScore = config.maxScore();
@@ -228,6 +237,25 @@ public class ExerciseModel {
             return true;
         }
         return false;
+    }
+
+    public JSONObject getJson() {
+
+        JSONObject data = new JSONObject();
+        data.put("score", score);
+        data.put("attempts", attempts);
+        data.put("locked", locked);
+
+        JSONArray idsJson = new JSONArray();
+        for (ArrayList<Integer> line : idsPlaced) {
+            JSONArray jsonLine = new JSONArray();
+            for (Integer val : line)
+                jsonLine.add(val);
+            idsJson.add(jsonLine);
+        }
+        data.put("placed_words", idsJson);
+
+        return data;
     }
 
     // PRIVATE

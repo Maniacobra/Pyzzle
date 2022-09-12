@@ -18,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static com.maniacobra.pyzzle.models.ExecutionResult.*;
@@ -27,7 +26,7 @@ import static com.maniacobra.pyzzle.utils.TextUtils.addToTextFlow;
 
 public class CodeRunner {
     // Singleton
-    private static CodeRunner instance = new CodeRunner();
+    private static final CodeRunner instance = new CodeRunner();
 
     public static CodeRunner getInstance() {
         return instance;
@@ -87,12 +86,17 @@ public class CodeRunner {
         ExecutionResult result = SUCCESS;
         dsDeclaration.setFill(AppStyle.Colors.resultValid);
         consoleText.getChildren().add(dsDeclaration);
-        // Process
+        // Build process
         ArrayList<String> params = new ArrayList<>();
-        params.add("cmd");
-        params.add("/c");
-        params.add("py");
+        if (System.getProperty("os.name").toLowerCase().contains("linux"))
+            params.add("python3");
+        else {
+            params.add("cmd");
+            params.add("/c");
+            params.add("py");
+        }
         params.add("py/execute.py");
+        // Launch process
         if (dataset != null)
             params.addAll(dataset);
         try {

@@ -231,10 +231,12 @@ public class ExerciseController {
         return false;
     }
 
-    public ExerciseModel managerConnection(ExerciseManager mainModel) {
-
-        this.manager = mainModel;
+    public ExerciseModel getModel() {
         return model;
+    }
+
+    public void setManger(ExerciseManager manager) {
+        this.manager = manager;
     }
 
     public void delete() {

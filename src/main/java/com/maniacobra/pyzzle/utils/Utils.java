@@ -2,8 +2,10 @@ package com.maniacobra.pyzzle.utils;
 
 import javafx.scene.control.Alert;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Utils {
 
