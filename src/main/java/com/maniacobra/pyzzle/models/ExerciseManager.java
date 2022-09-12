@@ -82,7 +82,7 @@ public class ExerciseManager {
             for (Object obj : (JSONArray) jsonData.get("exercises")) {
                 JSONObject jsonExo = (JSONObject) obj;
                 exercises.add(jsonExo);
-                maxScore += (Double) jsonExo.get("coef");
+                maxScore += Utils.getFloat(jsonExo, "coef");
                 packLength++;
             }
             int starting = 0;
@@ -91,12 +91,20 @@ public class ExerciseManager {
             JSONObject completion = (JSONObject) jsonData.get("completion");
             if (completion != null) {
                 starting = Utils.getInt(completion, "last_panel");
-                totalScore = ((Double) completion.get("total_score")).floatValue();
+                totalScore = Utils.getFloat(completion, "total_score");
+                int i = 0;
+                for (Object completed : (JSONArray) completion.get("exercises")) {
+                    savedCompletion.put(i, (JSONObject) completed);
+                    i++;
+                }
             }
+
             // First exercise
             JSONObject exerciseCompletion = null;
+            System.out.println(hasCompletion);
             if (hasCompletion)
                 exerciseCompletion = (JSONObject) ((JSONArray) ((JSONObject) loadedData.get("completion")).get("exercises")).get(starting);
+            System.out.println(exerciseCompletion);
             ExerciseConfig config = new ExerciseConfig(exercises.get(starting), starting, exercises.size(), totalScore, maxScore, exerciseCompletion);
             return loadExercise(borderPane, config);
         }
@@ -122,9 +130,7 @@ public class ExerciseManager {
             return;
         }
 
-        JSONObject exerciseCompletion = null;
-        if (hasCompletion)
-            exerciseCompletion = (JSONObject) ((JSONArray) ((JSONObject) loadedData.get("completion")).get("exercises")).get(number);
+        JSONObject exerciseCompletion = savedCompletion.get(number);
         ExerciseConfig config = new ExerciseConfig(exercises.get(number), number, exercises.size(), currentScore, maxScore, exerciseCompletion);
 
         int result = loadExercise(borderPane, config);

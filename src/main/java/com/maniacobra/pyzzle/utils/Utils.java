@@ -25,7 +25,19 @@ public class Utils {
     }
 
     public static int getInt(JSONObject data, String key) {
-        return ((Long) data.get(key)).intValue();
+
+        Object nb = data.get(key);
+        if (nb instanceof Long)
+            return ((Long) nb).intValue();
+        return (Integer) nb;
+    }
+
+    public static float getFloat(JSONObject data, String key) {
+
+        Object nb = data.get(key);
+        if (nb instanceof Double)
+            return ((Double) nb).floatValue();
+        return (Float) nb;
     }
 
     public static void systemAlert(Alert.AlertType type, String title, String content) {

@@ -81,11 +81,13 @@ public class ExerciseModel {
 
         // Completion
         if (config.completion() != null && config.completion().get("empty") == null) {
-            System.out.println(config);
+            System.out.println(config.completion());
             JSONObject completion = config.completion();
             attempts = Utils.getInt(completion, "attempts");
             locked = (boolean) completion.get("locked");
-            score = ((Double) completion.get("score")).floatValue();
+            score = Utils.getFloat(completion, "score");
+            if (locked)
+                lock(nodes);
         }
 
         // Score
@@ -305,7 +307,7 @@ public class ExerciseModel {
     private boolean loadJsonData(JSONObject data) {
 
         try {
-            coef = ((Double) data.get("coef")).floatValue();
+            coef = Utils.getFloat(data, "coef");
             attempts = Utils.getInt(data, "attempts");
             name = data.get("name").toString();
             // Inputs
