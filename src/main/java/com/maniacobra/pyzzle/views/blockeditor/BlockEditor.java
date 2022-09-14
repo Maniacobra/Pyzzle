@@ -224,8 +224,11 @@ public class BlockEditor {
 
         for (ArrayList<WordBlock> blockLine : blocks)
             for (WordBlock block : blockLine)
-                if (block.getWord().getId() == id)
+                if (block.getWord().getId() == id) {
                     block.getWord().use();
+                    return;
+                }
+        System.out.println(id + " not found.");
     }
 
     public void stopPreview() {

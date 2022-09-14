@@ -77,7 +77,7 @@ public class ExerciseManager {
          * 2 = Graphics error
          */
         try {
-            resetPack();
+            resetPack(borderPane);
             maxScore = 0;
             for (Object obj : (JSONArray) jsonData.get("exercises")) {
                 JSONObject jsonExo = (JSONObject) obj;
@@ -101,10 +101,8 @@ public class ExerciseManager {
 
             // First exercise
             JSONObject exerciseCompletion = null;
-            System.out.println(hasCompletion);
             if (hasCompletion)
                 exerciseCompletion = (JSONObject) ((JSONArray) ((JSONObject) loadedData.get("completion")).get("exercises")).get(starting);
-            System.out.println(exerciseCompletion);
             ExerciseConfig config = new ExerciseConfig(exercises.get(starting), starting, exercises.size(), totalScore, maxScore, exerciseCompletion);
             return loadExercise(borderPane, config);
         }
@@ -218,13 +216,21 @@ public class ExerciseManager {
                     "Impossible de charger l'exercice, des données du fichier semblent manquantes, mal formattées ou invalides.");
     }
 
-    private void resetPack() {
+    private void resetPack(BorderPane borderPane) {
 
         exercises.clear();
         for (ExerciseController controller : loadedControllers.values())
             controller.delete();
         loadedControllers.clear();
         loadedPanes.clear();
-        currentController = null;
+        if (currentController != null) {
+            currentController.delete();
+            currentController = null;
+        }
+        hasCompletion = false;
+        maxScore = 0;
+        packLength = 0;
+        borderPane.setCenter(null);
+        savedCompletion.clear();
     }
 }

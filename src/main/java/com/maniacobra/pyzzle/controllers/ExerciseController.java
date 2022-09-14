@@ -106,11 +106,8 @@ public class ExerciseController {
 
         textFlowConsole.getChildren().clear();
         codeEditor.setHighlightedLines(CodeRunner.getInstance().getErrorLines());
-        if (model.proceedExecution(nodes)) {
-            codeEditor.lock(false);
-            wordSelection.lock(false);
-            removeSelection();
-        }
+        if (model.proceedExecution(nodes))
+            lock();
         codeEditor.draw();
     }
 
@@ -143,7 +140,8 @@ public class ExerciseController {
             return;
 
         setEditors();
-        ArrayList<ArrayList<Word>> solution = model.getSolutionOrPlaced(buttonSolution);
+        model.switchSolution();
+        ArrayList<ArrayList<Word>> solution = model.getSolutionOrPlaced();
         codeEditor.lock(model.isSolutionDisplayed());
         wordSelection.lock(model.isSolutionDisplayed());
         codeEditor.fill(solution);
@@ -152,6 +150,12 @@ public class ExerciseController {
                 wordSelection.decountWord(word.getId());
         wordSelection.draw();
         updateCode();
+
+        // Nodes
+        if (model.isSolutionDisplayed())
+            buttonSolution.setText("Voir la solution");
+        else
+            buttonSolution.setText("Retour");
     }
 
     // Block editor
@@ -224,7 +228,16 @@ public class ExerciseController {
     public boolean loadConfig(ExerciseConfig config) {
 
         if (model.loadExercise(config, nodes)) {
+            if (model.isLocked())
+                lock();
             wordSelection.fill(model.getWords());
+            if (config.completion() != null) {
+                codeEditor.fill(model.getSolutionOrPlaced());
+                for (int id : model.getIdsPlaced())
+                    wordSelection.decountWord(id);
+                wordSelection.draw();
+            }
+            updateCode();
             return true;
         }
         model = new ExerciseModel();
@@ -264,5 +277,11 @@ public class ExerciseController {
         }
         selectedBlock = null;
         codeEditor.stopPreview();
+    }
+
+    private void lock() {
+        codeEditor.lock(false);
+        wordSelection.lock(false);
+        removeSelection();
     }
 }

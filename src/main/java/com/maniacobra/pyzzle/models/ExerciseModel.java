@@ -33,6 +33,7 @@ public class ExerciseModel {
     private int totalExercises;
     private boolean locked;
     private boolean solutionDisplayed;
+    private boolean win;
 
     private final ArrayList<String> inputs = new ArrayList<>();
     private final ArrayList<List<String>> datasets = new ArrayList<>();
@@ -81,13 +82,21 @@ public class ExerciseModel {
 
         // Completion
         if (config.completion() != null && config.completion().get("empty") == null) {
-            System.out.println(config.completion());
             JSONObject completion = config.completion();
             attempts = Utils.getInt(completion, "attempts");
-            locked = (boolean) completion.get("locked");
+            win = (boolean) completion.get("win");
             score = Utils.getFloat(completion, "score");
-            if (locked)
-                lock(nodes);
+            idsPlaced.clear();
+            for (Object lineObj : (JSONArray) config.completion().get("placed_words")) {
+                ArrayList<Integer> line = new ArrayList<>();
+                for (Object id : (JSONArray) lineObj) {
+                    if (id instanceof Integer)
+                        line.add((Integer) id);
+                    else if (id instanceof Long)
+                        line.add(((Long) id).intValue());
+                }
+                idsPlaced.add(line);
+            }
         }
 
         // Score
@@ -117,10 +126,10 @@ public class ExerciseModel {
         return wordsCopy;
     }
 
-    public ArrayList<ArrayList<Word>> getSolutionOrPlaced(Button solutionButton) {
+    public ArrayList<ArrayList<Word>> getSolutionOrPlaced() {
 
         ArrayList<ArrayList<Word>> wordsCopy = new ArrayList<>();
-        for (List<Integer> idsLine : (solutionDisplayed ? idsPlaced : idsSolution)) {
+        for (List<Integer> idsLine : (solutionDisplayed ? idsSolution : idsPlaced)) {
             ArrayList<Word> newLine = new ArrayList<>();
             for (Integer id : idsLine)
                 for (List<Word> wordLine : words)
@@ -129,12 +138,11 @@ public class ExerciseModel {
                             newLine.add(word.getCopy(true));
             wordsCopy.add(newLine);
         }
-        if (solutionDisplayed)
-            solutionButton.setText("Voir la solution");
-        else
-            solutionButton.setText("Retour");
-        solutionDisplayed = !solutionDisplayed;
         return wordsCopy;
+    }
+
+    public void switchSolution() {
+        solutionDisplayed = !solutionDisplayed;
     }
 
     public int getExerciseNumber() {
@@ -195,10 +203,8 @@ public class ExerciseModel {
         boolean worse = score > tempScore;
         if (!worse)
             score = tempScore * coef;
-        boolean win = tempScore == 1;
-
+        win = tempScore == 1;
         totalScore = initialTotalScore + score;
-        updateScore(nodes);
 
         // Display results
         Color color;
@@ -228,16 +234,14 @@ public class ExerciseModel {
             addToTextFlow(nodes.consoleText(), "Info : un seul résultat vide ou différent de celui souhaité\nmène à la perte de tous les points d'un test.", AppStyle.Colors.info, true);
         }
         else {
-            nodes.completionText().setText("Réussi à 100% !");
-            nodes.completionText().setFill(AppStyle.Colors.fullCompletion);
-            lock(nodes);
+            updateScore(nodes);
             return true;
         }
         if (attempts == 0) {
-            nodes.completionText().setText(String.format("Terminé avec %s sur %s points", Utils.nbToStr(score), Utils.nbToStr(coef)));
-            lock(nodes);
+            updateScore(nodes);
             return true;
         }
+        updateScore(nodes);
         return false;
     }
 
@@ -246,7 +250,7 @@ public class ExerciseModel {
         JSONObject data = new JSONObject();
         data.put("score", score);
         data.put("attempts", attempts);
-        data.put("locked", locked);
+        data.put("win", win);
 
         JSONArray idsJson = new JSONArray();
         for (ArrayList<Integer> line : idsPlaced) {
@@ -258,6 +262,13 @@ public class ExerciseModel {
         data.put("placed_words", idsJson);
 
         return data;
+    }
+
+    public ArrayList<Integer> getIdsPlaced() {
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (ArrayList<Integer> line : idsPlaced)
+            ids.addAll(line);
+        return ids;
     }
 
     // PRIVATE
@@ -302,6 +313,16 @@ public class ExerciseModel {
             nodes.attemptsText().setText("Aucun essai restant");
         else
             nodes.attemptsText().setText("Essais illimités");
+
+        if (win) {
+            nodes.completionText().setText("Réussi à 100% !");
+            nodes.completionText().setFill(AppStyle.Colors.fullCompletion);
+            lock(nodes);
+        }
+        else if (attempts == 0) {
+            nodes.completionText().setText(String.format("Terminé avec %s sur %s points", Utils.nbToStr(score), Utils.nbToStr(coef)));
+            lock(nodes);
+        }
     }
 
     private boolean loadJsonData(JSONObject data) {
