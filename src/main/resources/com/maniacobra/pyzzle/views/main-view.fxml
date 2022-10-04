@@ -17,8 +17,9 @@
          <menus>
             <Menu mnemonicParsing="false" text="Fichier">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#menuOpenFile" text="Ouvrir un pack d'exercices" />
-                  <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#menuSave" text="Sauvegarder" disable="true" />
+                  <MenuItem mnemonicParsing="false" onAction="#menuOpenFile" text="Ouvrir..." />
+                  <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#menuSave" text="Enregistrer sous..." disable="true" />
+                  <MenuItem fx:id="quickSaveMenuItem" mnemonicParsing="false" onAction="#menuQuickSave" text="Enregistrer" disable="true" />
                </items>
             </Menu>
          </menus>

@@ -4,7 +4,6 @@ import com.maniacobra.pyzzle.controllers.ExerciseNodes;
 import com.maniacobra.pyzzle.properties.AppIdentity;
 import com.maniacobra.pyzzle.properties.AppStyle;
 import com.maniacobra.pyzzle.utils.Utils;
-import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import org.json.simple.JSONArray;
@@ -41,6 +40,8 @@ public class ExerciseModel {
     private final ArrayList<ArrayList<Word>> words = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> idsPlaced = new ArrayList<>();
     private final ArrayList<ArrayList<Integer>> idsSolution = new ArrayList<>();
+
+    private JSONArray resultTextJson = new JSONArray();
 
     public ExerciseModel() {
         resetAll();
@@ -97,6 +98,7 @@ public class ExerciseModel {
                 }
                 idsPlaced.add(line);
             }
+            resultTextJson = (JSONArray) completion.get("result_text");
         }
 
         // Score
@@ -224,6 +226,7 @@ public class ExerciseModel {
         addToTextFlow(nodes.consoleText(), "\nRÉSULTAT DES TESTS : " + message, color, true);
         addToTextFlow(nodes.consoleText(), String.format("Points gagnés : %s sur %s\n\n",
                 Utils.nbToStr(tempScore * coef), Utils.nbToStr(coef)), color, false);
+        boolean result = false;
         if (!win) {
             if (worse)
                 addToTextFlow(nodes.consoleText(), "Ce score est inférieur au précédent essai et n'est donc pas pris en compte.\n");
@@ -233,16 +236,13 @@ public class ExerciseModel {
                         AppStyle.Colors.objectives, true);
             addToTextFlow(nodes.consoleText(), "Info : un seul résultat vide ou différent de celui souhaité\nmène à la perte de tous les points d'un test.", AppStyle.Colors.info, true);
         }
-        else {
-            updateScore(nodes);
-            return true;
-        }
-        if (attempts == 0) {
-            updateScore(nodes);
-            return true;
-        }
+        else
+            result = true;
+        if (attempts == 0)
+            result = true;
         updateScore(nodes);
-        return false;
+        textFlowToJson(nodes.consoleText());
+        return result;
     }
 
     public JSONObject getJson() {
@@ -251,6 +251,7 @@ public class ExerciseModel {
         data.put("score", score);
         data.put("attempts", attempts);
         data.put("win", win);
+        data.put("result_text", resultTextJson);
 
         JSONArray idsJson = new JSONArray();
         for (ArrayList<Integer> line : idsPlaced) {
@@ -299,6 +300,19 @@ public class ExerciseModel {
         text.setTextAlignment(TextAlignment.CENTER);
         text.setFont(Font.font("Arial", FontWeight.BOLD, AppStyle.Values.consoleFontSize));
         return text;
+    }
+
+    private void textFlowToJson(TextFlow textFlow) {
+
+        resultTextJson.clear();
+        textFlow.getChildren().stream().forEach(t -> {
+            JSONObject textJson = new JSONObject();
+            Text text = (Text) t;
+            textJson.put("text", text.getText());
+            textJson.put("color", text.getFill().toString());
+            textJson.put("bold", text.getFont().getStyle().equals("Bold"));
+            resultTextJson.add(textJson);
+        });
     }
 
     private void updateScore(ExerciseNodes nodes) {

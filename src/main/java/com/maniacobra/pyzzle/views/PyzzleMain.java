@@ -1,5 +1,6 @@
 package com.maniacobra.pyzzle.views;
 
+import com.maniacobra.pyzzle.properties.AppIdentity;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,7 +22,7 @@ public class PyzzleMain extends Application {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(PyzzleMain.class.getResource("style.css")).toExternalForm());
-        stage.setTitle("Pyzzle");
+        stage.setTitle(AppIdentity.name);
         stage.setScene(scene);
         stage.show();
     }

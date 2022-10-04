@@ -1,6 +1,8 @@
 package com.maniacobra.pyzzle.models;
 
 import com.maniacobra.pyzzle.controllers.ExerciseController;
+import com.maniacobra.pyzzle.properties.AppIdentity;
+import com.maniacobra.pyzzle.utils.FileIO;
 import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.PyzzleMain;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +16,6 @@ import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class ExerciseManager {
     private ExerciseController currentController = null;
     private float maxScore = 0;
     private int packLength = 0;
+    private String packName = "Sans nom";
 
     private final HashMap<Integer, JSONObject> savedCompletion = new HashMap<>();
 
@@ -44,17 +46,25 @@ public class ExerciseManager {
          * 2 = Problème d'interface
          * 3 = Problème d'exercice
          */
-        try (FileReader reader = new FileReader(file)) {
+        try {
+            String data;
+
+            if (file.getName().endsWith(".json"))
+                data = FileIO.getInstance().readNormal(file);
+            else
+                data = FileIO.getInstance().decrypt(file);
             JSONParser parser = new JSONParser();
-            loadedData = (JSONObject) parser.parse(reader);
+            loadedData = (JSONObject) parser.parse(data);
             String fileType = loadedData.get("file_type").toString();
             hasCompletion = fileType.equals("opened_pack");
             if (fileType.equals("pack") || hasCompletion) {
                 int result = loadPack(loadedData, borderPane, hasCompletion);
                 if (result != 0)
                     displayErrorMessage(result);
+                else
+                    packName = file.getName();
+                return true;
             }
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
             Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors de l'ouverture du fichier",
@@ -136,7 +146,7 @@ public class ExerciseManager {
             displayErrorMessage(result);
     }
 
-    public void saveData(File dir) {
+    public void saveData(File file) {
 
         if (loadedData == null)
             return;
@@ -163,13 +173,19 @@ public class ExerciseManager {
         completion.put("exercises", completedExercises);
         data.put("completion", completion);
 
-        // Write file
-        String fileName = dir.getAbsolutePath() + "/data.json";
-        try (FileWriter writer = new FileWriter(fileName)) {
-            writer.write(data.toJSONString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        FileIO.getInstance().encrypt(file, data.toJSONString());
+    }
+
+    public String getSaveFileName() {
+
+        String[] splitted = packName.split("\\.");
+        if (splitted.length > 0)
+            return splitted[0] + "." + AppIdentity.openedExtension;
+        return "Sans nom." + AppIdentity.openedExtension;
+    }
+
+    public boolean getHasCompletion() {
+        return hasCompletion;
     }
 
     // PRIVATE
@@ -227,10 +243,10 @@ public class ExerciseManager {
             currentController.delete();
             currentController = null;
         }
-        hasCompletion = false;
         maxScore = 0;
         packLength = 0;
         borderPane.setCenter(null);
         savedCompletion.clear();
+        packName = "Sans nom";
     }
 }

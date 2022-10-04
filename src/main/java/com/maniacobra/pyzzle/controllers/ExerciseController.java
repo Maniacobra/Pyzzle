@@ -2,6 +2,7 @@ package com.maniacobra.pyzzle.controllers;
 
 import com.maniacobra.pyzzle.models.*;
 import com.maniacobra.pyzzle.properties.AppIdentity;
+import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.blockeditor.BlockEditor;
 import com.maniacobra.pyzzle.views.blockeditor.WordBlock;
 import javafx.event.EventHandler;
@@ -12,11 +13,16 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javax.xml.stream.EventFilter;
 import java.util.ArrayList;
+
+import static com.maniacobra.pyzzle.utils.TextUtils.addToTextFlow;
 
 public class ExerciseController {
 
@@ -236,6 +242,13 @@ public class ExerciseController {
                 for (int id : model.getIdsPlaced())
                     wordSelection.decountWord(id);
                 wordSelection.draw();
+                JSONArray resultText = (JSONArray) config.completion().get("result_text");
+                if (resultText != null) {
+                    for (Object obj : resultText) {
+                        JSONObject text = (JSONObject) obj;
+                        addToTextFlow(textFlowConsole, (String) text.get("text"), Color.web((String) text.get("color")), (boolean) text.get("bold"));
+                    }
+                }
             }
             updateCode();
             return true;

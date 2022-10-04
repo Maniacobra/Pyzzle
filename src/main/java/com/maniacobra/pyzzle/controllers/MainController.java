@@ -1,41 +1,61 @@
 package com.maniacobra.pyzzle.controllers;
 
 import com.maniacobra.pyzzle.models.ExerciseManager;
+import com.maniacobra.pyzzle.properties.AppIdentity;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.List;
 
 public class MainController {
 
-    private final ExerciseManager model = new ExerciseManager();
+    private final ExerciseManager manager = new ExerciseManager();
     @FXML
     private BorderPane borderPane;
     @FXML
     private MenuItem saveMenuItem;
+    @FXML
+    private MenuItem quickSaveMenuItem;
+
+    private File saveFile = null;
 
     @FXML
     public void menuOpenFile() {
 
         FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Fichier Pyzzle", List.of(AppIdentity.extension, AppIdentity.openedExtension));
+        fileChooser.setSelectedExtensionFilter(filter);
         File selectedFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
         if (selectedFile != null)
-            if (model.openFile(selectedFile, borderPane)) {
+            if (manager.openFile(selectedFile, borderPane)) {
                 saveMenuItem.setDisable(false);
+                if (manager.getHasCompletion()) {
+                    saveFile = selectedFile;
+                    quickSaveMenuItem.setDisable(false);
+                }
             }
     }
 
     @FXML
     public void menuSave() {
 
-        DirectoryChooser dirChooser = new DirectoryChooser();
-        File selectedDir = dirChooser.showDialog(Stage.getWindows().get(0));
-        if (selectedDir != null)
-            model.saveData(selectedDir);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName(manager.getSaveFileName());
+        saveFile = fileChooser.showSaveDialog(Stage.getWindows().get(0));
+        menuQuickSave();
+        if (saveFile != null)
+            quickSaveMenuItem.setDisable(false);
+    }
+
+    @FXML
+    public void menuQuickSave() {
+
+        if (saveFile != null)
+            manager.saveData(saveFile);
     }
 
     public void initialize() {

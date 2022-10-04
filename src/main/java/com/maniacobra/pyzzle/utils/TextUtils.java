@@ -17,6 +17,7 @@ public class TextUtils {
             text.setFont(Font.font("Arial", FontWeight.BOLD, AppStyle.Values.consoleFontSize));
         textFlow.getChildren().add(text);
     }
+
     public static void addToTextFlow(TextFlow textFlow, String str) {
         addToTextFlow(textFlow, str, null, false);
     }
