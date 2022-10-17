@@ -15,7 +15,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +32,8 @@ public class ExerciseManager {
     private String packName = "Sans nom";
 
     private final HashMap<Integer, JSONObject> savedCompletion = new HashMap<>();
+
+    private File lastSave = null;
 
     // Pane saving
     private final boolean paneSaving = false;
@@ -151,6 +152,7 @@ public class ExerciseManager {
         if (loadedData == null)
             return;
 
+        lastSave = file;
         savedCompletion.put(currentController.getModel().getExerciseNumber(), currentController.getModel().getJson());
 
         // Make json
@@ -174,6 +176,12 @@ public class ExerciseManager {
         data.put("completion", completion);
 
         FileIO.getInstance().encrypt(file, data.toJSONString());
+    }
+
+    public void saveData() {
+
+        if (lastSave != null)
+            saveData(lastSave);
     }
 
     public String getSaveFileName() {

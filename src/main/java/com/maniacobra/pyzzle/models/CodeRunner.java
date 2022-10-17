@@ -1,8 +1,10 @@
 package com.maniacobra.pyzzle.models;
 
 import com.maniacobra.pyzzle.properties.AppStyle;
+import com.maniacobra.pyzzle.utils.Utils;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -87,14 +89,9 @@ public class CodeRunner {
         dsDeclaration.setFill(AppStyle.Colors.resultValid);
         consoleText.getChildren().add(dsDeclaration);
         // Build process
-        ArrayList<String> params = new ArrayList<>();
-        if (System.getProperty("os.name").toLowerCase().contains("linux"))
-            params.add("python3");
-        else {
-            params.add("cmd");
-            params.add("/c");
-            params.add("py");
-        }
+        ArrayList<String> params = getParams();
+        if (params == null)
+            throw new RuntimeException("Impossible d'exécuter Python.");
         params.add("py/execute.py");
         // Launch process
         if (dataset != null)
@@ -206,5 +203,59 @@ public class CodeRunner {
         Scene scene = new Scene(layout, width, height);
         window.setScene(scene);
         window.showAndWait();
+    }
+
+    public boolean pythonTest() {
+
+        ArrayList<String> params = getParams();
+        if (params == null)
+            return false;
+        params.add("--version");
+        try {
+            ProcessBuilder pb = new ProcessBuilder(params);
+            pb.redirectErrorStream(true);
+            Process p = pb.start();
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            List<String> lines = in.lines().toList();
+            if (lines.size() > 0 && lines.get(0).contains("Python 3.")) {
+                System.out.println("Python is working !");
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Utils.systemAlert(Alert.AlertType.ERROR, "Python 3 ne semble pas être installé",
+                """
+                        Pyzzle n'est pas parvenu à exécuter Python sur votre ordinateur.
+                        Veuillez télécharger et installer la dernière version de Python (www.python.org).
+                        Si Python est déjà installé, essayez de configurer manuellement les arguments de commande dans le menu Préférences.
+                        Si le problème persiste, contactez le développeur.""");
+        return false;
+    }
+
+    public ArrayList<String> getParams() {
+        ArrayList<String> params = new ArrayList<>();
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("linux")) {
+            // LINUX
+            params.add("python3");
+        }
+        else if (osName.contains("windows")) {
+            // WINDOWS
+            params.add("cmd");
+            params.add("/c");
+            params.add("py");
+        }
+        else if (osName.contains("mac")) {
+            // MACINTOSH
+            params.add("python");
+        }
+        else {
+            Utils.systemAlert(Alert.AlertType.ERROR, "Système d'exploitation inconnu",
+                    "Système d'exploitation inconnu : " + osName +
+                            "\nPython ne peut pas être exécuté, veuillez paramétrer manuellement les arguments qu'utilise Pyzzle pour exécuter Python.");
+            return null;
+        }
+        return params;
     }
 }

@@ -1,5 +1,6 @@
 package com.maniacobra.pyzzle.views;
 
+import com.maniacobra.pyzzle.models.CodeRunner;
 import com.maniacobra.pyzzle.properties.AppIdentity;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,8 @@ public class PyzzleMain extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
+        CodeRunner.getInstance().pythonTest();
 
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
 
@@ -33,6 +36,6 @@ public class PyzzleMain extends Application {
 }
 
 /* TO-DO
- * Fond blanc
- * Mémorise exos premier coup
+ * Test Python
+ * Message d'accueil
  */

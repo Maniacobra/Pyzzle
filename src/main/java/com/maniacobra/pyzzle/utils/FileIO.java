@@ -1,5 +1,7 @@
 package com.maniacobra.pyzzle.utils;
 
+import com.maniacobra.pyzzle.properties.AppIdentity;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -8,10 +10,8 @@ import java.util.ArrayList;
 public class FileIO {
 
     private static final int[] key = {
-            96, -27, 95, -3,
-            -1, 30, -6, -28,
-            1, -25, 67, 47,
-            25, 15, 88, 90
+            96, -27, 95, -3, -1, 30, -6, -28,
+            1, -25, 67, 47, 25, 15, 88, 90
     };
 
     private static final FileIO instance = new FileIO();
@@ -59,12 +59,22 @@ public class FileIO {
         }
     }
 
-    public String readNormal(File file) {
-        String content = null;
-        try {
-            content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public String readNormal(File file) throws IOException {
+
+        String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        String[] path = file.getAbsolutePath().split("\\.");
+        if (path.length > 1 && path[path.length - 1].equals("json")) {
+            StringBuilder strBuilder = new StringBuilder();
+            for (int i = 0; i < path.length; i++) {
+                if (i == path.length - 1) {
+                    strBuilder.append(".");
+                    strBuilder.append(AppIdentity.openedExtension);
+                }
+                else
+                    strBuilder.append(path[i]);
+            }
+            File newFile = new File(strBuilder.toString());
+            encrypt(newFile, content);
         }
         return content;
     }

@@ -115,6 +115,7 @@ public class ExerciseController {
         if (model.proceedExecution(nodes))
             lock();
         codeEditor.draw();
+        manager.saveData();
     }
 
     @FXML

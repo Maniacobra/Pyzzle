@@ -1,5 +1,6 @@
 package com.maniacobra.pyzzle.controllers;
 
+import com.maniacobra.pyzzle.models.CodeRunner;
 import com.maniacobra.pyzzle.models.ExerciseManager;
 import com.maniacobra.pyzzle.properties.AppIdentity;
 import javafx.fxml.FXML;
@@ -25,6 +26,9 @@ public class MainController {
 
     @FXML
     public void menuOpenFile() {
+
+        if (!CodeRunner.getInstance().pythonTest())
+            return;
 
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Fichier Pyzzle", List.of(AppIdentity.extension, AppIdentity.openedExtension));
