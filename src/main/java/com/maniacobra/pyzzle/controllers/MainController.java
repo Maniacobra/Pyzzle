@@ -62,6 +62,11 @@ public class MainController {
             manager.saveData(saveFile);
     }
 
+    @FXML
+    public void menuAdvPref() {
+        System.out.println("Test");
+    }
+
     public void initialize() {
         //model.openFile(new File("C:\\Users\\hamon\\Desktop\\exercises\\logique.json"), borderPane);
     }

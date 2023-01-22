@@ -3,7 +3,9 @@ package com.maniacobra.pyzzle.models;
 import com.maniacobra.pyzzle.controllers.ExerciseNodes;
 import com.maniacobra.pyzzle.properties.AppIdentity;
 import com.maniacobra.pyzzle.properties.AppStyle;
+import com.maniacobra.pyzzle.utils.Popups;
 import com.maniacobra.pyzzle.utils.Utils;
+import javafx.scene.control.Alert;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import org.json.simple.JSONArray;
@@ -67,7 +69,8 @@ public class ExerciseModel {
 
         // Name
         nodes.numberText().setText(String.format("Exercice %d / %d", config.exerciseNumber() + 1, config.totalExercises()));
-        nodes.nameText().setText("\"" + name + "\"");
+        nodes.nameText().setText(name);
+        //nodes.nameText().set
         nodes.completionText().setText("Non terminé");
 
         // Objectives
@@ -106,6 +109,10 @@ public class ExerciseModel {
         maxScore = config.maxScore();
         totalScore = initialTotalScore;
         updateScore(nodes);
+
+        // Debug
+        if (AppIdentity.debugMode)
+            nodes.codeText().setEditable(true);
 
         return true;
     }
@@ -177,8 +184,6 @@ public class ExerciseModel {
         // Execution
         CodeRunner.getInstance().reset();
         CodeRunner.getInstance().prepareCode(nodes.codeText().toString(), inputs);
-        if (attempts > 0)
-            attempts--;
         nodes.consoleText().getChildren().clear();
         CodeRunner.getInstance().prepareCode(nodes.codeText().getText(), inputs);
         float tempScore = 0;
@@ -188,19 +193,33 @@ public class ExerciseModel {
         int nbSets = simple ? 1 : datasets.size();
         for (int i = 0; i < nbSets; i++) {
             ExecutionResult result = CodeRunner.getInstance().runCode(nodes.consoleText(), getDsDeclaration(i), simple ? null : datasets.get(i), objectives.get(i));
-            if (result == SUCCESS)
-                tempScore += 1;
-            else if (result == OVERFLOW)
-                tempScore += 0.5;
-            else if (result == EXCEPTION) {
-                // Error popup
-                CodeRunner instance = CodeRunner.getInstance();
-                if (instance.hasError() && !errors.contains(instance.getErrorType())) {
-                    errors.add(instance.getErrorType());
-                    instance.exceptionPopup();
-                }
+            switch (result) {
+                case SUCCESS:
+                    tempScore += 1;
+                    break;
+                case OVERFLOW:
+                    tempScore += 0.5;
+                    break;
+                case EXCEPTION:
+                    // Error popup
+                    CodeRunner instance = CodeRunner.getInstance();
+                    if (instance.hasError() && !errors.contains(instance.getErrorType())) {
+                        errors.add(instance.getErrorType());
+                        instance.exceptionPopup();
+                    }
+                    break;
+                case FATAL:
+                    nodes.consoleText().getChildren().clear();
+                    Utils.systemAlert(Alert.AlertType.ERROR, "Erreur fatale de Pyzzle",
+                            "Une erreur du logiciel est survenue, celle-ci n'est PAS causée par votre code, ce n'est pas une exception Python." +
+                                    "Vérifiez l'installation du logiciel.");
+                    return false;
             }
         }
+
+        // Scores
+        if (attempts > 0)
+            attempts--;
         tempScore = tempScore / nbSets;
         boolean worse = score > tempScore;
         if (!worse)

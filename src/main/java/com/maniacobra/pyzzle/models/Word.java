@@ -72,7 +72,8 @@ public class Word {
         KEYWORD,
         FUNCTION,
         TABULATION,
-        GROUP
+        GROUP,
+        IMPORT
     }
 
     private static final Color[] typeColors = {
@@ -85,5 +86,6 @@ public class Word {
             Color.rgb(213, 247, 210), // Function
             Color.rgb(190, 190, 190), // Tabulation
             Color.rgb(245, 225, 239), // Group
+            Color.WHITE, // Operator
     };
 }

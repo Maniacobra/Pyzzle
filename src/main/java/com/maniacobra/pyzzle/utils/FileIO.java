@@ -68,7 +68,7 @@ public class FileIO {
             for (int i = 0; i < path.length; i++) {
                 if (i == path.length - 1) {
                     strBuilder.append(".");
-                    strBuilder.append(AppIdentity.openedExtension);
+                    strBuilder.append(AppIdentity.extension);
                 }
                 else
                     strBuilder.append(path[i]);

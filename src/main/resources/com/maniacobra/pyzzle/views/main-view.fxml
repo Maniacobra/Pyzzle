@@ -22,6 +22,11 @@
                   <MenuItem fx:id="quickSaveMenuItem" mnemonicParsing="false" onAction="#menuQuickSave" text="Enregistrer" disable="true" />
                </items>
             </Menu>
+            <Menu fx:id="preferencesMenu" mnemonicParsing="false" text="Préférences">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#menuAdvPref" text="Avancé" />
+               </items>
+            </Menu>
          </menus>
       </MenuBar>
    </top>

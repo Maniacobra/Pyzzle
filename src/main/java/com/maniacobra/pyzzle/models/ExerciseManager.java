@@ -30,6 +30,8 @@ public class ExerciseManager {
     private float maxScore = 0;
     private int packLength = 0;
     private String packName = "Sans nom";
+    private String name = null;
+    private String surname = null;
 
     private final HashMap<Integer, JSONObject> savedCompletion = new HashMap<>();
 

@@ -1,20 +1,12 @@
 package com.maniacobra.pyzzle.models;
 
 import com.maniacobra.pyzzle.properties.AppStyle;
+import com.maniacobra.pyzzle.utils.Popups;
 import com.maniacobra.pyzzle.utils.Utils;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -55,7 +47,7 @@ public class CodeRunner {
         errorType = null;
     }
 
-    public void prepareCode(String pyCode, ArrayList<String> inputs) {
+    public void prepareCode(String pyCode, List<String> inputs) {
 
         // Make code
         String[] lines = pyCode.split("\n");
@@ -65,7 +57,7 @@ public class CodeRunner {
             pyBuilder.append(input);
             pyBuilder.append("=0, ");
         }
-        pyBuilder.append("):");
+        pyBuilder.append("):\n\tprint(\"#####\")");
         for (String line : lines) {
             pyBuilder.append("\n\t");
             pyBuilder.append(line);
@@ -83,6 +75,7 @@ public class CodeRunner {
         }
     }
 
+    /* Only 1 test */
     public ExecutionResult runCode(TextFlow consoleText, Text dsDeclaration, List<String> dataset, List<String> objective) {
 
         ExecutionResult result = SUCCESS;
@@ -91,7 +84,7 @@ public class CodeRunner {
         // Build process
         ArrayList<String> params = getParams();
         if (params == null)
-            throw new RuntimeException("Impossible d'exécuter Python.");
+            return FATAL;
         params.add("py/execute.py");
         // Launch process
         if (dataset != null)
@@ -101,59 +94,76 @@ public class CodeRunner {
             pb.redirectErrorStream(true);
             Process p = pb.start();
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
             // Interpret results
             List<String> lines = in.lines().toList();
-            int i = 0;
+            int lineNum = -1;
             int errorState = 0;
             for (String line : lines) {
-                if (errorState != 0) {
-                    if (errorState == 1) {
-                        errorType = line;
-                        errorState++;
-                    }
-                    else if (errorState == 2) {
-                        try {
-                            int lineNb = Integer.parseInt(line) - 1;
-                            errorLines.add(lineNb);
-                            addToTextFlow(consoleText, String.format("[ Erreur de type '%s' à la line n°%d du code. ]\n\n", errorType, lineNb), AppStyle.Colors.resultError, false);
+                if (lineNum == -1) {
+                    // First line
+                    if (!line.equals("#####")) {
+                        if (line.equals("!!!!!")) {
+                            dsDeclaration.setFill(AppStyle.Colors.resultError);
+                            errorState = 1;
                         }
-                        catch (NumberFormatException e) {
-                            e.printStackTrace();
+                        else {
+                            System.out.println("[ERROR] Invalid first line for Python execution : " + line);
+                            return FATAL;
                         }
-                        return EXCEPTION;
                     }
                 }
                 else {
-                    if (line.equals("!!!!!")) {
-                        dsDeclaration.setFill(AppStyle.Colors.resultError);
-                        errorState = 1;
+                    // Other lines
+                    if (errorState != 0) {
+                        if (errorState == 1) {
+                            errorType = line;
+                            errorState++;
+                        }
+                        else if (errorState == 2) {
+                            try {
+                                int lineNb = Integer.parseInt(line) - 1;
+                                errorLines.add(lineNb);
+                                addToTextFlow(consoleText, String.format("[ Erreur de type '%s' à la line n°%d du code. ]\n\n", errorType, lineNb), AppStyle.Colors.resultError, false);
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                            }
+                            return EXCEPTION;
+                        }
                     }
                     else {
-                        Color color = null;
-                        if (i >= objective.size()) {
-                            color = AppStyle.Colors.resultUnperfect;
-                            if (result == SUCCESS) {
-                                result = OVERFLOW;
+                        if (line.equals("!!!!!")) {
+                            dsDeclaration.setFill(AppStyle.Colors.resultError);
+                            errorState = 1;
+                        } else {
+                            Color color = null;
+                            if (lineNum >= objective.size()) {
+                                color = AppStyle.Colors.resultUnperfect;
+                                if (result == SUCCESS) {
+                                    result = OVERFLOW;
+                                    dsDeclaration.setFill(color);
+                                }
+                            } else if (!objective.get(lineNum).equals(line)) {
+                                color = AppStyle.Colors.resultWrong;
+                                result = WRONG;
                                 dsDeclaration.setFill(color);
                             }
-                        } else if (!objective.get(i).equals(line)) {
-                            color = AppStyle.Colors.resultWrong;
-                            result = WRONG;
-                            dsDeclaration.setFill(color);
+                            addToTextFlow(consoleText, line + '\n', color, false);
                         }
-                        addToTextFlow(consoleText, line + '\n', color, false);
                     }
                 }
-                i++;
+                lineNum++;
             }
-            while (i < objective.size()) {
+            if (lineNum == -1) {
+                System.out.println("[ERROR] Empty results for Python execution");
+                return FATAL;
+            }
+            while (lineNum < objective.size()) {
                 if (result != WRONG) {
                     result = INCOMPLETE;
                     dsDeclaration.setFill(AppStyle.Colors.resultWrong);
                 }
                 addToTextFlow(consoleText, "(vide)\n", AppStyle.Colors.resultEmpty, false);
-                i++;
+                lineNum++;
             }
             addToTextFlow(consoleText, "\n");
         } catch (Exception e) {
@@ -167,7 +177,6 @@ public class CodeRunner {
 
         if (errorType == null)
             return;
-
         String title = "Erreur de type '" + errorType + "'";
         String contentIntro = String.format("Erreur de type '%s' à la ligne %d", errorType, errorLines.peek());
         String content = switch (errorType) {
@@ -181,59 +190,58 @@ public class CodeRunner {
                     "Erreur de type :\nCette erreur se produit lorsque votre code essaie d'effectuer\nune opération sur une variable du mauvais type.";
             default -> "Vérifiez votre code.";
         };
-
-        Stage window = new Stage();
-        window.initModality(Modality.APPLICATION_MODAL);
-        window.setResizable(false);
-        window.setTitle(title);
-
-        Label label1 = new Label(contentIntro);
-        label1.setFont(Font.font("Arial", FontWeight.BOLD, label1.getFont().getSize()));
-        Label label2 = new Label(content);
-        Button button = new Button("OK");
-
-        button.setOnAction(e -> window.close());
-        VBox layout = new VBox(10);
-
-        layout.getChildren().addAll(label1, label2, button);
-        layout.setAlignment(Pos.CENTER);
-
-        int width = 400;
-        int height = content.split("\n").length * 30 + 60;
-        Scene scene = new Scene(layout, width, height);
-        window.setScene(scene);
-        window.showAndWait();
+        Popups.showPopup(title, contentIntro, content);
     }
 
     public boolean pythonTest() {
+
+        // BASIC PYTHON TEST
 
         ArrayList<String> params = getParams();
         if (params == null)
             return false;
         params.add("--version");
+        boolean installed = true;
         try {
             ProcessBuilder pb = new ProcessBuilder(params);
             pb.redirectErrorStream(true);
             Process p = pb.start();
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
             List<String> lines = in.lines().toList();
-            if (lines.size() > 0 && lines.get(0).contains("Python 3.")) {
-                System.out.println("Python is working !");
-                return true;
-            }
+            if (lines.size() == 0 || !lines.get(0).contains("Python 3."))
+                installed = false;
         } catch (Exception e) {
             e.printStackTrace();
+            installed = false;
         }
-        Utils.systemAlert(Alert.AlertType.ERROR, "Python 3 ne semble pas être installé",
-                """
-                        Pyzzle n'est pas parvenu à exécuter Python sur votre ordinateur.
-                        Veuillez télécharger et installer la dernière version de Python (www.python.org).
-                        Si Python est déjà installé, essayez de configurer manuellement les arguments de commande dans le menu Préférences.
-                        Si le problème persiste, contactez le développeur.""");
-        return false;
+        if (!installed) {
+            Utils.systemAlert(Alert.AlertType.ERROR, "Python 3 ne semble pas être installé",
+                    """
+                            Pyzzle n'est pas parvenu à exécuter Python sur votre ordinateur.
+                            Veuillez télécharger et installer la dernière version de Python (www.python.org).
+                            Si Python est déjà installé, essayez de configurer manuellement les arguments de commande dans le menu Préférences.
+                            Vous ne pouvez pas charger d'exercice.""");
+            return false;
+        }
+
+        // INSTALLATION TEST
+
+        prepareCode("print(sample + 1)", List.of("sample"));
+        ExecutionResult result = runCode(new TextFlow(), new Text(), List.of("5"), List.of("6"));
+        if (result != SUCCESS) {
+            Utils.systemAlert(Alert.AlertType.ERROR, "Erreur d'installation",
+                    """
+                            Pyzzle semble avoir des difficultés pour interagir avec Python correctement.
+                            Cela peut être lié à une mauvaise installation du logiciel, une mauvaise version de Python,
+                            des droits insuffisants ou autre problème du système.
+                            Vous ne pouvez pas charger d'exercice.""");
+            return false;
+        }
+        return true;
     }
 
     public ArrayList<String> getParams() {
+
         ArrayList<String> params = new ArrayList<>();
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("linux")) {

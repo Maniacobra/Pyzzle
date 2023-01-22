@@ -36,6 +36,20 @@ public class PyzzleMain extends Application {
 }
 
 /* TO-DO
- * Test Python
+ *
+ * PRIORITAIRE :
+ *
  * Message d'accueil
+ * Demande de nom + enregistrement
+ *
+ * Fonctionnalités dans les préférences :
+ *  - Paramètres arguments terminal
+ *  - Couleurs
+ *  - Auto-save
+ *
+ * NEXT :
+ *
+ * Éditeur d'énoncés
+ * Visualisation tableau des notes
+ *
  */
