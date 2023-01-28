@@ -1,8 +1,8 @@
 package com.maniacobra.pyzzle.controllers;
 
 import com.maniacobra.pyzzle.models.*;
-import com.maniacobra.pyzzle.properties.AppIdentity;
-import com.maniacobra.pyzzle.utils.Utils;
+import com.maniacobra.pyzzle.properties.AppProperties;
+import com.maniacobra.pyzzle.resources.CodeRunner;
 import com.maniacobra.pyzzle.views.blockeditor.BlockEditor;
 import com.maniacobra.pyzzle.views.blockeditor.WordBlock;
 import javafx.event.EventHandler;
@@ -19,7 +19,6 @@ import javafx.scene.text.TextFlow;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javax.xml.stream.EventFilter;
 import java.util.ArrayList;
 
 import static com.maniacobra.pyzzle.utils.TextUtils.addToTextFlow;
@@ -130,7 +129,7 @@ public class ExerciseController {
     @FXML
     public void goToNext() {
 
-        if (manager != null && (model.isLocked() || AppIdentity.debugMode))
+        if (manager != null && (model.isLocked() || AppProperties.debugMode))
             manager.goToExercise((BorderPane) anchorPane.getParent(), model.getExerciseNumber() + 1);
     }
 
@@ -144,7 +143,7 @@ public class ExerciseController {
     @FXML
     public void displaySolution() {
 
-        if (!model.isLocked() && !AppIdentity.debugMode)
+        if (!model.isLocked() && !AppProperties.debugMode)
             return;
 
         setEditors();
@@ -160,7 +159,7 @@ public class ExerciseController {
         updateCode();
 
         // Nodes
-        if (model.isSolutionDisplayed())
+        if (!model.isSolutionDisplayed())
             buttonSolution.setText("Voir la solution");
         else
             buttonSolution.setText("Retour");

@@ -266,7 +266,7 @@
       ],
       "solution": [
         [
-          4, 0, 5, 2, 6, 2, 7, 3, 8
+          4, 0, 5, 2, 6, 2, 7, 3, 8, 1
         ]
       ]
     },
@@ -300,7 +300,7 @@
           {
             "type": "OPERATOR",
             "text": "(",
-            "usages": -1,
+            "usages": 2,
             "id": 0
           },
           {
@@ -334,7 +334,7 @@
           {
             "type": "INPUT",
             "text": "var",
-            "usages": 2,
+            "usages": 3,
             "id": 5
           }
         ],
@@ -349,7 +349,7 @@
       ],
       "solution": [
         [
-          6, 3, 6
+          5, 3, 6
         ],
         [
           4, 0, 5, 1
@@ -467,10 +467,10 @@
       ],
       "solution": [
         [
-          5, 0, 8, 4, 6, 2, 7, 1
+          5, 0, 8, 4, 6, 3, 7, 1
         ],
         [
-          5, 0, 9, 4, 6, 3, 7, 1
+          5, 0, 9, 4, 6, 2, 7, 1
         ]
       ]
     },
@@ -647,12 +647,12 @@
       ]
     },
     {
-      "name": "Concaténation",
+      "name": "Concaténations",
       "coef": 1.0,
       "attempts": -1,
       "objectives": [
         [
-          "Ceci est une concaténation de chaînes"
+          "Ceci est une concatenation de chaines"
         ]
       ],
       "words": [
@@ -695,7 +695,7 @@
           },
           {
             "type": "VALUE",
-            "text": "\"concaténation de chaînes\"",
+            "text": "\"concatenation de chaines\"",
             "usages": 1,
             "id": 5
           }
@@ -864,105 +864,6 @@
       ]
     },
     {
-      "name": "Différence concaténation et print",
-      "coef": 1.0,
-      "attempts": -1,
-      "inputs": [
-        "var"
-      ],
-      "datasets": [
-        [
-          "4"
-        ],
-        [
-          "5"
-        ]
-      ],
-      "objectives": [
-        [
-          "4x4 = 16"
-        ],
-        [
-          "5x5 = 25"
-        ]
-      ],
-      "words": [
-        [
-          {
-            "type": "OPERATOR",
-            "text": "(",
-            "usages": 1,
-            "id": 0
-          },
-          {
-            "type": "OPERATOR",
-            "text": ")",
-            "usages": 1,
-            "id": 1
-          },
-          {
-            "type": "OPERATOR",
-            "text": ",",
-            "usages": -1,
-            "id": 2
-          },
-          {
-            "type": "OPERATOR",
-            "text": "+",
-            "usages": -1,
-            "id": 3
-          },
-          {
-            "type": "OPERATOR",
-            "text": "**",
-            "usages": 1,
-            "id": 4
-          }
-        ],
-        [
-          {
-            "type": "FUNCTION",
-            "text": "print",
-            "usages": 1,
-            "id": 5
-          }
-        ],
-        [
-          {
-            "type": "INPUT",
-            "text": "var",
-            "usages": -1,
-            "id": 6
-          }
-        ],
-        [
-          {
-            "type": "VALUE",
-            "text": "\"=\"",
-            "usages": 1,
-            "id": 7
-          },
-          {
-            "type": "VALUE",
-            "text": "\"x\"",
-            "usages": 1,
-            "id": 8
-          },
-          {
-            "type": "VALUE",
-            "text": "2",
-            "usages": 1,
-            "id": 9
-          }
-        ]
-      ],
-      "solution": [
-        [
-          5, 0, 6, 3, 8, 3, 6, 2, 7, 2, 6, 4, 9, 1
-        ]
-      ]
-    },
-    {
       "name": "Pythagore",
       "coef": 1.0,
       "attempts": -1,
@@ -1079,19 +980,19 @@
           {
             "type": "VALUE",
             "text": "\"Distance du point\"",
-            "usages": 2,
+            "usages": 1,
             "id": 11
           },
           {
             "type": "VALUE",
             "text": "\"=\"",
-            "usages": 2,
+            "usages": 1,
             "id": 12
           },
           {
             "type": "VALUE",
             "text": "\";\"",
-            "usages": 2,
+            "usages": 1,
             "id": 13
           }
         ]

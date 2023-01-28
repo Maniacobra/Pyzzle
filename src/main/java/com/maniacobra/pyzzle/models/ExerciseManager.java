@@ -1,8 +1,9 @@
 package com.maniacobra.pyzzle.models;
 
+import com.maniacobra.pyzzle.Launcher;
 import com.maniacobra.pyzzle.controllers.ExerciseController;
-import com.maniacobra.pyzzle.properties.AppIdentity;
-import com.maniacobra.pyzzle.utils.FileIO;
+import com.maniacobra.pyzzle.properties.AppProperties;
+import com.maniacobra.pyzzle.resources.PyzzFileLoader;
 import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.PyzzleMain;
 import javafx.fxml.FXMLLoader;
@@ -30,12 +31,11 @@ public class ExerciseManager {
     private float maxScore = 0;
     private int packLength = 0;
     private String packName = "Sans nom";
-    private String name = null;
-    private String surname = null;
 
     private final HashMap<Integer, JSONObject> savedCompletion = new HashMap<>();
 
-    private File lastSave = null;
+    private File openedFile = null;
+    private File saveFile = null;
 
     // Pane saving
     private final boolean paneSaving = false;
@@ -49,13 +49,13 @@ public class ExerciseManager {
          * 2 = Problème d'interface
          * 3 = Problème d'exercice
          */
+        System.out.println("Opening : " + file.getAbsolutePath());
         try {
             String data;
-
             if (file.getName().endsWith(".json"))
-                data = FileIO.getInstance().readNormal(file);
+                data = PyzzFileLoader.getInstance().readNormal(file);
             else
-                data = FileIO.getInstance().decrypt(file);
+                data = PyzzFileLoader.getInstance().decode(file);
             JSONParser parser = new JSONParser();
             loadedData = (JSONObject) parser.parse(data);
             String fileType = loadedData.get("file_type").toString();
@@ -66,18 +66,21 @@ public class ExerciseManager {
                     displayErrorMessage(result);
                 else
                     packName = file.getName();
+                openedFile = file;
+                if (hasCompletion)
+                    saveFile = openedFile;
                 return true;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(Launcher.output);
             Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors de l'ouverture du fichier",
                     "Le logiciel n'est pas parvenu à ouvrir ce fichier, vérifiez les permissions.");
         } catch (ParseException e) {
-            e.printStackTrace();
+            e.printStackTrace(Launcher.output);
             Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors de l'ouverture du fichier",
                     "Un problème est survenu lors de la lecture des données du fichier.");
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(Launcher.output);
             displayErrorMessage(1);
         }
         return false;
@@ -120,7 +123,7 @@ public class ExerciseManager {
             return loadExercise(borderPane, config);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(Launcher.output);
             return 1;
         }
     }
@@ -150,11 +153,15 @@ public class ExerciseManager {
     }
 
     public void saveData(File file) {
+        saveFile = file;
+        saveData();
+    }
 
-        if (loadedData == null)
+    public void saveData() {
+
+        if (loadedData == null || saveFile == null)
             return;
 
-        lastSave = file;
         savedCompletion.put(currentController.getModel().getExerciseNumber(), currentController.getModel().getJson());
 
         // Make json
@@ -177,25 +184,19 @@ public class ExerciseManager {
         completion.put("exercises", completedExercises);
         data.put("completion", completion);
 
-        FileIO.getInstance().encrypt(file, data.toJSONString());
-    }
-
-    public void saveData() {
-
-        if (lastSave != null)
-            saveData(lastSave);
+        PyzzFileLoader.getInstance().encode(saveFile, data.toJSONString());
     }
 
     public String getSaveFileName() {
 
         String[] splitted = packName.split("\\.");
         if (splitted.length > 0)
-            return splitted[0] + "." + AppIdentity.openedExtension;
-        return "Sans nom." + AppIdentity.openedExtension;
+            return splitted[0] + "." + AppProperties.openedExtension;
+        return "Sans_nom." + AppProperties.openedExtension;
     }
 
-    public boolean getHasCompletion() {
-        return hasCompletion;
+    public boolean hasSaveFile() {
+        return saveFile != null;
     }
 
     // PRIVATE
@@ -224,7 +225,7 @@ public class ExerciseManager {
             return 0;
         }
         catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(Launcher.output);
             return 2;
         }
     }

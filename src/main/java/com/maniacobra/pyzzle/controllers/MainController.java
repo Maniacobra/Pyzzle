@@ -1,8 +1,9 @@
 package com.maniacobra.pyzzle.controllers;
 
-import com.maniacobra.pyzzle.models.CodeRunner;
+import com.maniacobra.pyzzle.resources.CodeRunner;
 import com.maniacobra.pyzzle.models.ExerciseManager;
-import com.maniacobra.pyzzle.properties.AppIdentity;
+import com.maniacobra.pyzzle.properties.AppProperties;
+import com.maniacobra.pyzzle.views.PyzzleMain;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
@@ -22,8 +23,6 @@ public class MainController {
     @FXML
     private MenuItem quickSaveMenuItem;
 
-    private File saveFile = null;
-
     @FXML
     public void menuOpenFile() {
 
@@ -31,17 +30,13 @@ public class MainController {
             return;
 
         FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Fichier Pyzzle", List.of(AppIdentity.extension, AppIdentity.openedExtension));
+        fileChooser.setInitialDirectory(new File(AppProperties.packFolder));
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Fichier Pyzzle", List.of(AppProperties.extension, AppProperties.openedExtension));
         fileChooser.setSelectedExtensionFilter(filter);
         File selectedFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
         if (selectedFile != null)
-            if (manager.openFile(selectedFile, borderPane)) {
-                saveMenuItem.setDisable(false);
-                if (manager.getHasCompletion()) {
-                    saveFile = selectedFile;
-                    quickSaveMenuItem.setDisable(false);
-                }
-            }
+            if (manager.openFile(selectedFile, borderPane))
+                packLoaded();
     }
 
     @FXML
@@ -49,25 +44,35 @@ public class MainController {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialFileName(manager.getSaveFileName());
-        saveFile = fileChooser.showSaveDialog(Stage.getWindows().get(0));
-        menuQuickSave();
-        if (saveFile != null)
+        File file = fileChooser.showSaveDialog(Stage.getWindows().get(0));
+        if (file != null) {
+            manager.saveData(file);
             quickSaveMenuItem.setDisable(false);
+        }
     }
 
     @FXML
     public void menuQuickSave() {
-
-        if (saveFile != null)
-            manager.saveData(saveFile);
+        manager.saveData();
     }
 
     @FXML
     public void menuAdvPref() {
-        System.out.println("Test");
+        //
     }
 
     public void initialize() {
-        //model.openFile(new File("C:\\Users\\hamon\\Desktop\\exercises\\logique.json"), borderPane);
+
+        if (PyzzleMain.fileArg != null)
+            if (manager.openFile(PyzzleMain.fileArg, borderPane))
+                packLoaded();
+    }
+
+    private void packLoaded() {
+
+        saveMenuItem.setDisable(false);
+        if (manager.hasSaveFile()) {
+            quickSaveMenuItem.setDisable(false);
+        }
     }
 }

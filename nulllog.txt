@@ -1,0 +1,6 @@
+=== FINDING THE CORRECT COMMAND ARGUMENTS ===
+Attempt with arguments : python\python.exe
+Python 3.11.1
+Script execution is working !
+Script execution is working !
+Opening : C:\Users\hamon\AppData\Roaming\Pyzzle\Packs\logique.pyzz

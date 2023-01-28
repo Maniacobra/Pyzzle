@@ -1,0 +1,10 @@
+- Verif fichiers .pyzzle
+- SamplePacks
+- Update execute.py
+- Maven clean
+- Maven package
+- org -> .jar
+- Verif terminal
+- Launch4j
+- Verif exe
+- Inno Setup

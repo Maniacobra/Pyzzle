@@ -4,6 +4,7 @@ import javafx.scene.control.Alert;
 import org.json.simple.JSONObject;
 
 import java.awt.*;
+import java.io.*;
 
 public class Utils {
 
@@ -40,13 +41,40 @@ public class Utils {
 
     public static void systemAlert(Alert.AlertType type, String title, String content) {
 
-        final Runnable runnable =
-                (Runnable) Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.exclamation");
-        if (runnable != null) runnable.run();
+        final Runnable runnable = (Runnable) Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.exclamation");
+        if (runnable != null)
+            runnable.run();
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    public static void copyDirectory(File sourceLocation, File targetLocation) throws IOException {
+        // https://stackoverflow.com/a/1146221/13313951
+
+        if (sourceLocation.isDirectory()) {
+            if (!targetLocation.exists()) {
+                targetLocation.mkdir();
+            }
+            String[] children = sourceLocation.list();
+            assert children != null;
+            for (String child : children) {
+                copyDirectory(new File(sourceLocation, child),
+                        new File(targetLocation, child));
+            }
+        }
+        else {
+            InputStream in = new FileInputStream(sourceLocation);
+            OutputStream out = new FileOutputStream(targetLocation);
+            // Copy the bits from instream to outstream
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0)
+                out.write(buf, 0, len);
+            in.close();
+            out.close();
+        }
     }
 }

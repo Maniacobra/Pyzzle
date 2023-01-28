@@ -1,9 +1,10 @@
 package com.maniacobra.pyzzle.models;
 
+import com.maniacobra.pyzzle.Launcher;
 import com.maniacobra.pyzzle.controllers.ExerciseNodes;
-import com.maniacobra.pyzzle.properties.AppIdentity;
+import com.maniacobra.pyzzle.properties.AppProperties;
 import com.maniacobra.pyzzle.properties.AppStyle;
-import com.maniacobra.pyzzle.utils.Popups;
+import com.maniacobra.pyzzle.resources.CodeRunner;
 import com.maniacobra.pyzzle.utils.Utils;
 import javafx.scene.control.Alert;
 import javafx.scene.paint.Color;
@@ -16,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.maniacobra.pyzzle.models.ExecutionResult.*;
 import static com.maniacobra.pyzzle.utils.TextUtils.*;
 
 public class ExerciseModel {
@@ -62,7 +62,7 @@ public class ExerciseModel {
         // Buttons
         if (config.exerciseNumber() <= 0)
             nodes.previousButton().setDisable(true);
-        if (!AppIdentity.debugMode)
+        if (!AppProperties.debugMode)
             nodes.nextButton().setDisable(true);
         else
             nodes.solutionButton().setDisable(false);
@@ -111,7 +111,7 @@ public class ExerciseModel {
         updateScore(nodes);
 
         // Debug
-        if (AppIdentity.debugMode)
+        if (AppProperties.debugMode)
             nodes.codeText().setEditable(true);
 
         return true;
@@ -420,7 +420,7 @@ public class ExerciseModel {
             return true;
         }
         catch (Exception | AssertionError e) {
-            e.printStackTrace();
+            e.printStackTrace(Launcher.output);
             return false;
         }
     }

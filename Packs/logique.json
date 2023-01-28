@@ -491,28 +491,45 @@
           },
           {
             "type": "OPERATOR",
-            "text": "=",
-            "usages": 1,
-            "id": 2
-          },
-          {
-            "type": "OPERATOR",
-            "text": ">",
-            "usages": 1,
-            "id": 3
-          },
-          {
-            "type": "OPERATOR",
             "text": "<",
+            "usages": 2,
+            "id": 2
+          }
+        ],
+        [
+          {
+            "type": "FUNCTION",
+            "text": "print",
             "usages": 1,
             "id": 4
-          },
+          }
+        ],
+        [
           {
-            "type": "OPERATOR",
-            "text": "and",
+            "type": "INPUT",
+            "text": "var",
             "usages": 1,
             "id": 5
           }
+        ],
+        [
+          {
+            "type": "VALUE",
+            "text": "10",
+            "usages": 1,
+            "id": 6
+          },
+          {
+            "type": "VALUE",
+            "text": "20",
+            "usages": 1,
+            "id": 7
+          }
+        ]
+      ],
+      "solution": [
+        [
+          4, 0, 6, 2, 5, 2, 7, 1
         ]
       ]
     }
