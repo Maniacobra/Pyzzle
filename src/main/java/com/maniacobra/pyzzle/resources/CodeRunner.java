@@ -4,6 +4,7 @@ import com.maniacobra.pyzzle.Launcher;
 import com.maniacobra.pyzzle.models.ExecutionResult;
 import com.maniacobra.pyzzle.properties.AppProperties;
 import com.maniacobra.pyzzle.properties.AppStyle;
+import com.maniacobra.pyzzle.properties.FilePaths;
 import com.maniacobra.pyzzle.utils.Popups;
 import com.maniacobra.pyzzle.utils.Utils;
 import javafx.scene.control.Alert;
@@ -82,7 +83,7 @@ public class CodeRunner {
             pyBuilder.append("pass");
         try {
             // Python file
-            BufferedWriter out = new BufferedWriter(new FileWriter(AppProperties.tempPy));
+            BufferedWriter out = new BufferedWriter(new FileWriter(FilePaths.getInstance().getTempPyFile()));
             out.write(pyBuilder.toString());
             out.close();
         } catch (Exception e) {
@@ -100,7 +101,7 @@ public class CodeRunner {
         if (command == null)
             return FATAL;
         ArrayList<String> commandExec = new ArrayList<>(command);
-        commandExec.add(AppProperties.executePy);
+        commandExec.add(FilePaths.getInstance().getExecutePyPath());
         // Launch process
         if (dataset != null)
             commandExec.addAll(dataset);
@@ -264,7 +265,7 @@ public class CodeRunner {
 
         ArrayList<List<String>> possibleCommands = new ArrayList<>();
         if (osName.contains("windows")) {
-            possibleCommands.add(List.of(AppProperties.pythonExePath));
+            possibleCommands.add(List.of(FilePaths.getInstance().getPythonExePath()));
             possibleCommands.add(List.of("cmd", "/c", "py"));
         }
         possibleCommands.add(List.of("python3"));

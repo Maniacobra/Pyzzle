@@ -3,7 +3,7 @@ package com.maniacobra.pyzzle.models;
 import com.maniacobra.pyzzle.Launcher;
 import com.maniacobra.pyzzle.controllers.ExerciseController;
 import com.maniacobra.pyzzle.properties.AppProperties;
-import com.maniacobra.pyzzle.resources.PyzzFileLoader;
+import com.maniacobra.pyzzle.resources.PyzzFileManager;
 import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.PyzzleMain;
 import javafx.fxml.FXMLLoader;
@@ -53,9 +53,9 @@ public class ExerciseManager {
         try {
             String data;
             if (file.getName().endsWith(".json"))
-                data = PyzzFileLoader.getInstance().readNormal(file);
+                data = PyzzFileManager.getInstance().readNormal(file);
             else
-                data = PyzzFileLoader.getInstance().decode(file);
+                data = PyzzFileManager.getInstance().decode(file);
             JSONParser parser = new JSONParser();
             loadedData = (JSONObject) parser.parse(data);
             String fileType = loadedData.get("file_type").toString();
@@ -184,7 +184,7 @@ public class ExerciseManager {
         completion.put("exercises", completedExercises);
         data.put("completion", completion);
 
-        PyzzFileLoader.getInstance().encode(saveFile, data.toJSONString());
+        PyzzFileManager.getInstance().encode(saveFile, data.toJSONString());
     }
 
     public String getSaveFileName() {
@@ -207,7 +207,7 @@ public class ExerciseManager {
         try {
             if (!paneSaving) {
                 if (currentController != null)
-                    currentController.delete();
+                    currentController.clearMemory();
                 borderPane.setCenter(null);
                 System.gc();
             }
@@ -247,11 +247,11 @@ public class ExerciseManager {
 
         exercises.clear();
         for (ExerciseController controller : loadedControllers.values())
-            controller.delete();
+            controller.clearMemory();
         loadedControllers.clear();
         loadedPanes.clear();
         if (currentController != null) {
-            currentController.delete();
+            currentController.clearMemory();
             currentController = null;
         }
         maxScore = 0;

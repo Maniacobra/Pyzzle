@@ -3,13 +3,15 @@ package com.maniacobra.pyzzle.controllers;
 import com.maniacobra.pyzzle.models.*;
 import com.maniacobra.pyzzle.properties.AppProperties;
 import com.maniacobra.pyzzle.resources.CodeRunner;
+import com.maniacobra.pyzzle.views.PyzzleMain;
 import com.maniacobra.pyzzle.views.blockeditor.BlockEditor;
 import com.maniacobra.pyzzle.views.blockeditor.WordBlock;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -73,11 +75,10 @@ public class ExerciseController {
 
     private WordBlock selectedBlock = null;
     private Canvas blockCanvas = null;
+    private final boolean dragAndDrop = true;
 
     private int mouseX = 0;
     private int mouseY = 0;
-
-    private EventHandler<MouseEvent> lastHandler = null;
 
     public void initialize() {
 
@@ -90,10 +91,12 @@ public class ExerciseController {
 
         anchorPane.addEventFilter(MouseEvent.MOUSE_MOVED, this::updateMouse);
         anchorPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::updateMouse);
+        anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, this::updateMouse);
+        anchorPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this::updateMouse);
 
-        anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+        anchorPane.addEventFilter(dragAndDrop ? MouseEvent.MOUSE_RELEASED : MouseEvent.MOUSE_PRESSED, mouseEvent -> {
             if (blockCanvas != null) {
-                if (mouseEvent.isPrimaryButtonDown() && codeEditor.insertWord(selectedBlock.getWord()))
+                if (mouseEvent.getButton() == MouseButton.PRIMARY && codeEditor.insertWord(selectedBlock.getWord()))
                     updateCode();
                 else {
                     wordSelection.returnWord(selectedBlock.getWord());
@@ -172,10 +175,13 @@ public class ExerciseController {
         mouseX = (int) mouseEvent.getX();
         mouseY = (int) mouseEvent.getY();
         if (blockCanvas != null) {
-            if (mouseX < anchorPane.getWidth() - blockCanvas.getWidth() / 2 - 5 && mouseX > blockCanvas.getWidth() / 2)
-                blockCanvas.setLayoutX(mouseX - blockCanvas.getWidth() / 2);
-            if (mouseY < anchorPane.getHeight() - blockCanvas.getHeight() / 2 - 5 && mouseY > blockCanvas.getHeight() / 2)
-                blockCanvas.setLayoutY(mouseY - blockCanvas.getHeight() / 2);
+            positionSelectedBlock();
+            // Preview only when above code editor
+            Node picked = mouseEvent.getPickResult().getIntersectedNode();
+            if (picked != null && picked.equals(canvasCodeEditor))
+                codeEditor.previewPosition(mouseX, mouseY);
+            else
+                codeEditor.stopPreview();
         }
     }
 
@@ -185,16 +191,8 @@ public class ExerciseController {
             codeEditor.delete();
         if (wordSelection != null)
             wordSelection.delete();
-        codeEditor = new BlockEditor(canvasCodeEditor, this, true);
-        wordSelection = new BlockEditor(canvasWordSelection, this, false);
-        // Events
-        if (lastHandler != null)
-            canvasCodeEditor.removeEventFilter(MouseEvent.MOUSE_MOVED, lastHandler);
-        lastHandler = mouseEvent -> {
-            if (blockCanvas != null)
-                codeEditor.previewPosition(mouseX, mouseY);
-        };
-        canvasCodeEditor.addEventFilter(MouseEvent.MOUSE_MOVED, lastHandler);
+        codeEditor = new BlockEditor(canvasCodeEditor, this, true, dragAndDrop);
+        wordSelection = new BlockEditor(canvasWordSelection, this, false, dragAndDrop);
         // Draw
         wordSelection.fill(model.getWords());
         codeEditor.draw();
@@ -212,9 +210,8 @@ public class ExerciseController {
         selectedBlock.draw(blockCanvas.getGraphicsContext2D());
 
         blockCanvas.setMouseTransparent(true);
-        blockCanvas.setLayoutX(mouseX - blockCanvas.getWidth() / 2);
-        blockCanvas.setLayoutY(mouseY - blockCanvas.getHeight() / 2);
         blockCanvas.setOpacity(0.7);
+        positionSelectedBlock();
     }
 
     public void updateCode() {
@@ -228,6 +225,20 @@ public class ExerciseController {
         wordSelection.returnWord(block.getWord());
         wordSelection.draw();
         textAreaCode.setText(codeEditor.getFullText());
+    }
+
+    public void quickInsertion(WordBlock block) {
+
+        Word word = block.getWord().getCopy(true);
+        if (PyzzleMain.isShiftPressed())
+            codeEditor.quickNewLine(word);
+        else
+            codeEditor.quickInsertion(word);
+        updateCode();
+    }
+
+    public boolean hasSelectedBlock() {
+        return selectedBlock != null;
     }
 
     // Access for Manager
@@ -266,7 +277,7 @@ public class ExerciseController {
         this.manager = manager;
     }
 
-    public void delete() {
+    public void clearMemory() {
 
         if (codeEditor != null)
             codeEditor.delete();
@@ -293,7 +304,30 @@ public class ExerciseController {
         codeEditor.stopPreview();
     }
 
+    private void positionSelectedBlock() {
+
+        int halfX = (int)(blockCanvas.getWidth() / 2);
+        int halfY = (int)(blockCanvas.getHeight() / 2);
+        int maxX = (int)(anchorPane.getWidth()) - halfX - 5;
+        int maxY = (int)(anchorPane.getHeight()) - halfY - 5;
+
+        int x = mouseX - halfX;
+        int y = mouseY - halfY;
+
+        if (x > maxX)
+            x = maxX;
+        else if (x < halfX)
+            x = halfX;
+        if (y > maxY)
+            y = maxY;
+        else if (y < halfY)
+            y = halfY;
+        blockCanvas.setLayoutX(x);
+        blockCanvas.setLayoutY(y);
+    }
+
     private void lock() {
+
         codeEditor.lock(false);
         wordSelection.lock(false);
         removeSelection();

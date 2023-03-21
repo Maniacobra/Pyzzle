@@ -14,6 +14,8 @@ import java.util.Stack;
 
 public class BlockEditor {
 
+    private final boolean dragAndDrop;
+
     private static final int sep = AppStyle.Values.blockSep;
     private static final int margin = (int) (sep * 2.5f);
 
@@ -27,16 +29,17 @@ public class BlockEditor {
     private int previewPosPixels = 0;
     private boolean previewMakeLine = false;
     private boolean ignoreNextClick = false;
-    private final boolean editor;
+    private final boolean construction;
     private boolean locked = false;
     private boolean solution = false;
 
     private final EventHandler<MouseEvent> eventHandlerPressed;
     private final EventHandler<MouseEvent> eventHandlerExited;
 
-    public BlockEditor(Canvas canvas, ExerciseController controller, boolean editor) {
+    public BlockEditor(Canvas canvas, ExerciseController controller, boolean construction, boolean dragAndDrop) {
 
-        this.editor = editor;
+        this.dragAndDrop = dragAndDrop;
+        this.construction = construction;
         this.canvas = canvas;
         gc = canvas.getGraphicsContext2D();
 
@@ -55,20 +58,33 @@ public class BlockEditor {
             for (ArrayList<WordBlock> blockLine : blocks) {
                 for (WordBlock block : blockLine) {
                     if (block.collide(x, y)) {
-                        if (mouseEvent.isPrimaryButtonDown())
+                        boolean leftClick = mouseEvent.isPrimaryButtonDown();
+                        boolean remove = false;
+                        if (leftClick) {
                             controller.setSelectedBlock(block);
-                        else if (!editor)
-                            return;
-                        if (block.getWord().use() && editor) {
-                            // Will pick in both editors but remove only in the left one
+                            if (block.getWord().use() && construction)
+                                remove = true;
+                        }
+                        else { // Right
+                            if (construction) {
+                                controller.returnWord(block);
+                                remove = true;
+                            }
+                            else if (block.getWord().getUsages() != 0) { // Word selection
+                                block.getWord().use();
+                                controller.quickInsertion(block);
+                            }
+                        }
+                        if (remove) {
                             blockLine.remove(block);
                             if (blockLine.size() == 0)
                                 blocks.remove(blockLine);
                             updateLinesFrom(i);
                             controller.updateCode();
-                            if (!mouseEvent.isPrimaryButtonDown())
-                                controller.returnWord(block);
                         }
+
+                        if (controller.hasSelectedBlock() && construction)
+                            previewPosition(x, y);
                         draw();
                         return;
                     }
@@ -78,7 +94,6 @@ public class BlockEditor {
         };
 
         eventHandlerExited = mouseEvent -> {
-
             if (locked)
                 return;
             previewLine = -1;
@@ -113,7 +128,7 @@ public class BlockEditor {
         int x = margin;
         int y = lineNb * (WordBlock.blockHeight + sep) + margin;
         for (Word word : wordLine) {
-            WordBlock block = new WordBlock(word, x, y, gc, !editor);
+            WordBlock block = new WordBlock(word, x, y, gc, !construction);
             blockLine.add(block);
             x += block.getWidth() + sep;
         }
@@ -182,6 +197,7 @@ public class BlockEditor {
             updateLinesFrom(previewLine + 1);
         }
         else {
+            // Re-build the line to change
             ArrayList<WordBlock> blockLine = blocks.get(previewLine);
             int i = 0;
             for (WordBlock block : blockLine) {
@@ -194,22 +210,11 @@ public class BlockEditor {
                 wordLine.add(word);
             fillLine(wordLine, previewLine);
         }
-        ignoreNextClick = true;
+        if (!dragAndDrop)
+            ignoreNextClick = true;
         previewLine = -1;
         draw();
         return true;
-    }
-
-    private void updateLinesFrom(int start) {
-
-        ArrayList<Word> wordLine = new ArrayList<>();
-        for (int i = start; i < blocks.size(); i++) {
-            wordLine.clear();
-            ArrayList<WordBlock> blockLine = blocks.get(i);
-            for (WordBlock block : blockLine)
-                wordLine.add(block.getWord());
-            fillLine(wordLine, i);
-        }
     }
 
     public void returnWord(Word word) {
@@ -218,6 +223,30 @@ public class BlockEditor {
             for (WordBlock block : blockLine)
                 if (block.getWord().merge(word))
                     return;
+    }
+
+    public void quickInsertion(Word word) {
+
+        ArrayList<Word> wordLine = new ArrayList<>();
+        int lineNb = 0;
+        if (blocks.size() > 0) {
+            lineNb = blocks.size() - 1;
+            // Re-build the line to change
+            ArrayList<WordBlock> blockLine = blocks.get(lineNb);
+            for (WordBlock block : blockLine)
+                wordLine.add(block.getWord());
+        }
+        wordLine.add(word);
+        fillLine(wordLine, lineNb);
+        draw();
+    }
+
+    public void quickNewLine(Word word) {
+
+        ArrayList<Word> wordLine = new ArrayList<>();
+        wordLine.add(word);
+        fillLine(wordLine, blocks.size());
+        draw();
     }
 
     public void decountWord(int id) {
@@ -237,7 +266,8 @@ public class BlockEditor {
             previewLine = -1;
             draw();
         }
-        ignoreNextClick = true;
+        if (!dragAndDrop)
+            ignoreNextClick = true;
     }
 
     public String getFullText() {
@@ -313,5 +343,17 @@ public class BlockEditor {
     public void delete() {
         canvas.removeEventFilter(MouseEvent.MOUSE_PRESSED, eventHandlerPressed);
         canvas.removeEventFilter(MouseEvent.MOUSE_EXITED, eventHandlerExited);
+    }
+
+    private void updateLinesFrom(int start) {
+
+        ArrayList<Word> wordLine = new ArrayList<>();
+        for (int i = start; i < blocks.size(); i++) {
+            wordLine.clear();
+            ArrayList<WordBlock> blockLine = blocks.get(i);
+            for (WordBlock block : blockLine)
+                wordLine.add(block.getWord());
+            fillLine(wordLine, i);
+        }
     }
 }

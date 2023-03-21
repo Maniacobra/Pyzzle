@@ -1,6 +1,7 @@
 package com.maniacobra.pyzzle;
 
 import com.maniacobra.pyzzle.properties.AppProperties;
+import com.maniacobra.pyzzle.properties.FilePaths;
 import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.PyzzleMain;
 
@@ -15,20 +16,12 @@ public class Launcher {
     public static void main(String[] args) {
 
         // Create local folders
-        File files = new File(AppProperties.localFilesPath);
-        if (!files.exists()) {
-            try {
-                Utils.copyDirectory(new File(AppProperties.defaultLocalFiles), new File(AppProperties.localFilesPath));
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        }
-
+        if (!FilePaths.load())
+            System.exit(1);
         // Log
         if (AppProperties.logEnabled) {
             try {
-                File logFile = new File(AppProperties.logFile);
+                File logFile = FilePaths.getInstance().getLogFile();
                 logFile.delete();
                 logFile.createNewFile();
                 output = new PrintStream(logFile);

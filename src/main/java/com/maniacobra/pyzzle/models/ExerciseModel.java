@@ -194,26 +194,23 @@ public class ExerciseModel {
         for (int i = 0; i < nbSets; i++) {
             ExecutionResult result = CodeRunner.getInstance().runCode(nodes.consoleText(), getDsDeclaration(i), simple ? null : datasets.get(i), objectives.get(i));
             switch (result) {
-                case SUCCESS:
-                    tempScore += 1;
-                    break;
-                case OVERFLOW:
-                    tempScore += 0.5;
-                    break;
-                case EXCEPTION:
+                case SUCCESS -> tempScore += 1;
+                case OVERFLOW -> tempScore += 0.5;
+                case EXCEPTION -> {
                     // Error popup
                     CodeRunner instance = CodeRunner.getInstance();
                     if (instance.hasError() && !errors.contains(instance.getErrorType())) {
                         errors.add(instance.getErrorType());
                         instance.exceptionPopup();
                     }
-                    break;
-                case FATAL:
+                }
+                case FATAL -> {
                     nodes.consoleText().getChildren().clear();
                     Utils.systemAlert(Alert.AlertType.ERROR, "Erreur fatale de Pyzzle",
                             "Une erreur du logiciel est survenue, celle-ci n'est PAS causée par votre code, ce n'est pas une exception Python." +
                                     "Vérifiez l'installation du logiciel.");
                     return false;
+                }
             }
         }
 

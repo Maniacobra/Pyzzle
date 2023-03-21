@@ -1,5 +1,6 @@
 package com.maniacobra.pyzzle.controllers;
 
+import com.maniacobra.pyzzle.properties.FilePaths;
 import com.maniacobra.pyzzle.resources.CodeRunner;
 import com.maniacobra.pyzzle.models.ExerciseManager;
 import com.maniacobra.pyzzle.properties.AppProperties;
@@ -30,7 +31,7 @@ public class MainController {
             return;
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(AppProperties.packFolder));
+        fileChooser.setInitialDirectory(FilePaths.getInstance().getPackFile());
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Fichier Pyzzle", List.of(AppProperties.extension, AppProperties.openedExtension));
         fileChooser.setSelectedExtensionFilter(filter);
         File selectedFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
@@ -63,8 +64,8 @@ public class MainController {
 
     public void initialize() {
 
-        if (PyzzleMain.fileArg != null)
-            if (manager.openFile(PyzzleMain.fileArg, borderPane))
+        if (PyzzleMain.getFileArg() != null)
+            if (manager.openFile(PyzzleMain.getFileArg(), borderPane))
                 packLoaded();
     }
 
