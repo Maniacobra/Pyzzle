@@ -7,8 +7,8 @@
 #define MyAppURL "https://maniacobra.com/pyzzle"
 #define MyAppExeName "Pyzzle.exe"
 #define MyAppAssocName MyAppName + " File"
-#define MyAppAssocExt ".pyzz"
-#define MyAppAssocExt2 ".spyzz"
+#define MyAppAssocExt ".pyzl"
+#define MyAppAssocExt2 ".spyzl"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
 [Setup]

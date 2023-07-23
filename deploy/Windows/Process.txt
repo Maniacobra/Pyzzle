@@ -1,6 +1,6 @@
-- Verif fichiers .pyzzle
+- Verif fichiers .pyzl
 - SamplePacks
-- Update execute.py
+- Update execute.py DefaultAppDataFiles
 - Maven clean
 - Maven package
 - org -> .jar

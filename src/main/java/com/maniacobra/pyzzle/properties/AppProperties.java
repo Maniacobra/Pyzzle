@@ -7,6 +7,6 @@ public class AppProperties {
     public static final String name = "Pyzzle";
     public static final String version = "indev";
 
-    public static final String extension = "pyzz";
-    public static final String openedExtension = "spyzz";
+    public static final String extension = "pyzl";
+    public static final String openedExtension = "spyzl";
 }

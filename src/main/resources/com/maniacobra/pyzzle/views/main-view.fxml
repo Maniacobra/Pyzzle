@@ -2,8 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -11,24 +9,26 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderPane" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.maniacobra.pyzzle.controllers.MainController">
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.MenuButton?>
+
+<BorderPane fx:id="borderPane" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.maniacobra.pyzzle.controllers.MainController">
    <top>
-      <MenuBar prefWidth="238.0" BorderPane.alignment="CENTER">
-         <menus>
-            <Menu mnemonicParsing="false" text="Fichier">
+      <ToolBar prefWidth="238.0" BorderPane.alignment="CENTER">
+         <items>
+            <MenuButton styleClass="mbutton" mnemonicParsing="false" text="Fichier">
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#menuOpenFile" text="Ouvrir..." />
-                  <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#menuSave" text="Enregistrer sous..." disable="true" />
-                  <MenuItem fx:id="quickSaveMenuItem" mnemonicParsing="false" onAction="#menuQuickSave" text="Enregistrer" disable="true" />
+                  <MenuItem fx:id="menuItemSave" disable="true" mnemonicParsing="false" onAction="#menuSave" text="Enregistrer sous..." />
+                  <MenuItem fx:id="menuItemQuickSave" disable="true" mnemonicParsing="false" onAction="#menuQuickSave" text="Enregistrer" />
                </items>
-            </Menu>
-            <Menu fx:id="preferencesMenu" mnemonicParsing="false" text="Préférences">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#menuAdvPref" text="Avancé" />
-               </items>
-            </Menu>
-         </menus>
-      </MenuBar>
+            </MenuButton>
+            <Button styleClass="mbutton" mnemonicParsing="false" onAction="#menuSettings" text="Préférences" />
+            <Button styleClass="mbutton" mnemonicParsing="false" onAction="#menuAbout" text="À propos" />
+         </items>
+      </ToolBar>
+
    </top>
    <bottom>
       <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER">

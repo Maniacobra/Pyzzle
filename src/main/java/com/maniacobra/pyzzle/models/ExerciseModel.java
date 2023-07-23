@@ -206,9 +206,10 @@ public class ExerciseModel {
                 }
                 case FATAL -> {
                     nodes.consoleText().getChildren().clear();
-                    Utils.systemAlert(Alert.AlertType.ERROR, "Erreur fatale de Pyzzle",
-                            "Une erreur du logiciel est survenue, celle-ci n'est PAS causée par votre code, ce n'est pas une exception Python." +
-                                    "Vérifiez l'installation du logiciel.");
+                    if (CodeRunner.getInstance().pythonTest())
+                        Utils.systemAlert(Alert.AlertType.ERROR, "Erreur fatale de Pyzzle",
+                                "Une erreur inconnue du logiciel est survenue, cette erreur n'est PAS causée par votre code." +
+                                        " Vérifiez l'installation du logiciel.");
                     return false;
                 }
             }
@@ -261,6 +262,7 @@ public class ExerciseModel {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public JSONObject getJson() {
 
         JSONObject data = new JSONObject();
@@ -272,8 +274,7 @@ public class ExerciseModel {
         JSONArray idsJson = new JSONArray();
         for (ArrayList<Integer> line : idsPlaced) {
             JSONArray jsonLine = new JSONArray();
-            for (Integer val : line)
-                jsonLine.add(val);
+            jsonLine.addAll(line);
             idsJson.add(jsonLine);
         }
         data.put("placed_words", idsJson);
@@ -318,10 +319,11 @@ public class ExerciseModel {
         return text;
     }
 
+    @SuppressWarnings("unchecked")
     private void textFlowToJson(TextFlow textFlow) {
 
         resultTextJson.clear();
-        textFlow.getChildren().stream().forEach(t -> {
+        textFlow.getChildren().forEach(t -> {
             JSONObject textJson = new JSONObject();
             Text text = (Text) t;
             textJson.put("text", text.getText());

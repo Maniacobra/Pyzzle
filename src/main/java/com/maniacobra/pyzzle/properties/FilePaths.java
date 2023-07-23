@@ -15,9 +15,10 @@ public class FilePaths {
     private final String executePy;
     private final String tempPy;
     private final String packFolder;
+    private final String settingsPath;
     private final boolean isLinux;
 
-    private static FilePaths instance = new FilePaths();
+    private static FilePaths instance = null;
 
     public static boolean load() {
         instance = new FilePaths();
@@ -45,12 +46,20 @@ public class FilePaths {
         }
         defaultLocalFiles = "DefaultAppDataFiles";
         logFile = localFilesPath + "log.txt";
-        pythonExePath = "python/python.exe";
+
+        // Pre-integrated Python
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("windows"))
+            pythonExePath = "python/python.exe";
+        else
+            pythonExePath = null;
 
         String pyFilesPath = localFilesPath + ".py/";
         executePy = pyFilesPath + "execute.py";
         tempPy = pyFilesPath + "temp.py";
         packFolder = localFilesPath + "Packs/";
+
+        settingsPath = "settings.json";
     }
 
     public File getLogFile() {
@@ -65,6 +74,10 @@ public class FilePaths {
         return new File(packFolder);
     }
 
+    public File getSettingsFile() {
+        return new File(settingsPath);
+    }
+
     public String getExecutePyPath() {
         return executePy;
     }
@@ -77,8 +90,8 @@ public class FilePaths {
 
         if (!isLinux) {
             System.out.println("Checking local folder at : " + localFilesPath);
-            File files = new File(localFilesPath);
-            if (!files.exists()) {
+            File dir = new File(localFilesPath);
+            if (!dir.exists()) {
                 try {
                     Utils.copyDirectory(new File(defaultLocalFiles), new File(localFilesPath));
                     System.out.println("Folder created.");

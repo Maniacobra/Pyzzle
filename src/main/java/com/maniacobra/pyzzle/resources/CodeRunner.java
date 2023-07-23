@@ -2,7 +2,7 @@ package com.maniacobra.pyzzle.resources;
 
 import com.maniacobra.pyzzle.Launcher;
 import com.maniacobra.pyzzle.models.ExecutionResult;
-import com.maniacobra.pyzzle.properties.AppProperties;
+import com.maniacobra.pyzzle.properties.AppSettings;
 import com.maniacobra.pyzzle.properties.AppStyle;
 import com.maniacobra.pyzzle.properties.FilePaths;
 import com.maniacobra.pyzzle.utils.Popups;
@@ -211,7 +211,7 @@ public class CodeRunner {
         String contentIntro = String.format("Erreur de type '%s' à la ligne %d", errorType, errorLines.peek());
         String content = switch (errorType) {
             case "SyntaxError" ->
-                    "Erreur de syntaxe :\nCette erreur se produit lorsque votre code est mal formaté,\nvérifiez les opérateurs et le positionnement des mot-clés,\nvotre code n'a pas pu s'exécuter.\n(Notez que la ligne identifiée de l'erreur n'est pas\ntoujours celle qui cause problème.)";
+                    "Erreur de syntaxe :\nCette erreur se produit lorsque votre code est mal formaté,\nvérifiez les opérateurs, le positionnement\ndes mot-clés et les sauts de ligne.\nVotre code n'a pas pu s'exécuter.\n(Notez que la ligne identifiée de l'erreur n'est pas\ntoujours celle qui cause problème.)";
             case "IndentationError" ->
                     "Erreur d'indentation :\nCette erreur se produit lorsque votre code contient des tabulations positionnées ou manquantes, votre code n'a pas pu s'exécuter.";
             case "NameError" ->
@@ -229,12 +229,33 @@ public class CodeRunner {
 
         List<String> command = getCommand();
         if (command == null) {
-            Utils.systemAlert(Alert.AlertType.ERROR, "Python 3 ne semble pas être installé",
+            if (AppSettings.getInstance().autoArgs) {
+                if (FilePaths.getInstance().getPythonExePath() != null) {
+                    Utils.systemAlert(Alert.AlertType.ERROR, "Python 3 introuvable",
+                            """
+                                    La version pré-intégrée de Python de ce logiciel n'est pas accessible, et Python est introuvable dans votre système.
+                                    Voici ce que vous pouvez tenter de faire :
+                                    - Vérifier les permissions du logiciel (essayez d'exécuter en tant qu'administrateur).
+                                    - Désinstaller et réinstaller Pyzzle.
+                                    - Télécharger et installer la dernière version de Python sur votre système (www.python.org).
+                                    - Si Python est déjà installé sur votre système, essayez de configurer manuellement les arguments de terminal dans le menu 'Préférences'.
+                                    """);
+                }
+                else {
+                    Utils.systemAlert(Alert.AlertType.ERROR, "Python 3 est introuvable",
                     """
-                            Pyzzle n'est pas parvenu à exécuter Python sur votre ordinateur.
-                            Veuillez télécharger et installer la dernière version de Python (www.python.org).
-                            Si Python est déjà installé, essayez de configurer manuellement les arguments de commande dans le menu Préférences.
-                            Vous ne pouvez pas charger d'exercice.""");
+                            Pyzzle installé sur un système autre que Windows a comme pré-requis que Python 3 soit installé.
+                            Veuillez télécharger et installer la dernière version de Python sur votre système : www.python.org
+                            Si Python est déjà installé, vous pouvez tenter de configurer manuellement les arguments de terminal dans le menu 'Préférences'.
+                            Vous pouvez également vérifier les permissions du logiciel.
+                            """);
+                }
+            }
+            else
+                Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle ne peut pas fonctionner",
+                        """
+                                Les arguments de terminal définis manuellement semblent être incorrects.
+                                Veuillez aller dans le menu Préférences et changer ces arguments ou cocher 'Trouver Python automatiquement'.""");
             return false;
         }
 
@@ -247,8 +268,7 @@ public class CodeRunner {
                     """
                             Pyzzle semble avoir des difficultés pour fonctionner correctement.
                             Veuillez fermer le programme, puis l'exécuter en tant qu'administrateur.
-                            Si c'est déjà le cas, alors le logiciel est peut-être mal installé.
-                            Vous ne pouvez pas charger d'exercice.""");
+                            Si c'est déjà le cas, alors le logiciel est peut-être mal installé, essayez donc une ré-installation.""");
             return false;
         }
         System.out.println("Script execution is working !");
@@ -264,12 +284,16 @@ public class CodeRunner {
         // POSSIBLE COMMANDS
 
         ArrayList<List<String>> possibleCommands = new ArrayList<>();
-        if (osName.contains("windows")) {
-            possibleCommands.add(List.of(FilePaths.getInstance().getPythonExePath()));
-            possibleCommands.add(List.of("cmd", "/c", "py"));
+        if (AppSettings.getInstance().autoArgs) {
+            if (FilePaths.getInstance().getPythonExePath() != null) {
+                possibleCommands.add(List.of(FilePaths.getInstance().getPythonExePath()));
+                possibleCommands.add(List.of("cmd", "/c", "py"));
+            }
+            possibleCommands.add(List.of("python3"));
+            possibleCommands.add(List.of("python"));
         }
-        possibleCommands.add(List.of("python3"));
-        possibleCommands.add(List.of("python"));
+        else
+            possibleCommands.add(AppSettings.getInstance().terminalArgs);
 
         // TEST COMMANDS
 
@@ -307,9 +331,14 @@ public class CodeRunner {
             }
             if (installed) {
                 workingCommand = command;
+                System.out.println(command);
                 return command;
             }
         }
         return null;
+    }
+
+    public void resetCommand() {
+        workingCommand = null;
     }
 }

@@ -63,6 +63,7 @@ public class Word {
 
     // TYPE
 
+    @SuppressWarnings("unused")
     public enum WordType {
         DEFAULT,
         INPUT,

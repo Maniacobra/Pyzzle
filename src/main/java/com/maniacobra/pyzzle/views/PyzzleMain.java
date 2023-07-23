@@ -1,14 +1,16 @@
 package com.maniacobra.pyzzle.views;
 
+import com.maniacobra.pyzzle.properties.FilePaths;
+import com.maniacobra.pyzzle.properties.AppSettings;
 import com.maniacobra.pyzzle.resources.CodeRunner;
 import com.maniacobra.pyzzle.properties.AppProperties;
+import com.maniacobra.pyzzle.utils.Utils;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -31,6 +33,14 @@ public class PyzzleMain extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
+        // Setup
+        if (!FilePaths.load()) {
+            Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Impossible de démarrer",
+                    "Pyzzle n'est pas parvenu à préparer son démarrage correctement, vérifiez l'installation et les permissions du logiciel.");
+            System.exit(1);
+        }
+        AppSettings.getInstance().load();
+        // Tests
         CodeRunner.getInstance().pythonTest();
 
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
@@ -40,6 +50,7 @@ public class PyzzleMain extends Application {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(PyzzleMain.class.getResource("style.css")).toExternalForm());
+        stage.setMaximized(true);
         stage.setTitle(AppProperties.name);
         stage.setScene(scene);
 
@@ -70,19 +81,28 @@ public class PyzzleMain extends Application {
 
 /* TO-DO
  *
- * PRIORITAIRE :
+ * === PRIORITAIRE ===
  *
- * Message d'accueil
+ * Erreur version
+ * Logo
+ * Page d'accueil : Possibilité de charger dernier fichier
  * Demande de nom + enregistrement
  *
- * Fonctionnalités dans les préférences :
- *  - Paramètres arguments terminal
- *  - Couleurs
- *  - Auto-save
+ * === NEXT ===
  *
- * NEXT :
- *
+ * Bulles d'aide pour chaque exercice
+ * File load version check
+ * Upgrade popups (auto line break)
  * Éditeur d'énoncés
- * Visualisation tableau des notes
- * Bug : Changement de disposition de fenêtre à chaque exercice
+ * Analyze des notes
+ * Test Machintosh
+ * Site web
+ *
+ * === BUGS ===
+ *
+ * Bleu dans la toolbar
+ * Couleur zone de construction
+ * Caractères spéciaux
+ * Changement de disposition de fenêtre à chaque exercice
+ *
  */

@@ -6,29 +6,32 @@ import com.maniacobra.pyzzle.models.ExerciseManager;
 import com.maniacobra.pyzzle.properties.AppProperties;
 import com.maniacobra.pyzzle.views.PyzzleMain;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class MainController {
 
     private final ExerciseManager manager = new ExerciseManager();
+
     @FXML
     private BorderPane borderPane;
     @FXML
-    private MenuItem saveMenuItem;
+    private MenuItem menuItemSave;
     @FXML
-    private MenuItem quickSaveMenuItem;
+    private MenuItem menuItemQuickSave;
 
     @FXML
     public void menuOpenFile() {
 
-        if (!CodeRunner.getInstance().pythonTest())
-            return;
+        CodeRunner.getInstance().pythonTest();
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(FilePaths.getInstance().getPackFile());
@@ -48,7 +51,7 @@ public class MainController {
         File file = fileChooser.showSaveDialog(Stage.getWindows().get(0));
         if (file != null) {
             manager.saveData(file);
-            quickSaveMenuItem.setDisable(false);
+            menuItemQuickSave.setDisable(false);
         }
     }
 
@@ -58,8 +61,26 @@ public class MainController {
     }
 
     @FXML
-    public void menuAdvPref() {
-        //
+    public void menuSettings() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(PyzzleMain.class.getResource("settings-view.fxml"));
+            Pane pane = fxmlLoader.load();
+            SettingsController controller = fxmlLoader.getController();
+            String returnText;
+            if (manager.getCurrentPane() == null)
+                returnText = "Retour à l'écran d'accueil";
+            else
+                returnText = "Retour à l'exercice";
+            controller.init(manager.getCurrentPane(), borderPane, returnText);
+            borderPane.setCenter(pane);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    public void menuAbout() {
+        System.out.println("Ok About");
     }
 
     public void initialize() {
@@ -71,9 +92,9 @@ public class MainController {
 
     private void packLoaded() {
 
-        saveMenuItem.setDisable(false);
+        menuItemSave.setDisable(false);
         if (manager.hasSaveFile()) {
-            quickSaveMenuItem.setDisable(false);
+            menuItemQuickSave.setDisable(false);
         }
     }
 }

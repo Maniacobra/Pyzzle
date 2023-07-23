@@ -2,9 +2,17 @@ package com.maniacobra.pyzzle.resources;
 
 import com.maniacobra.pyzzle.properties.AppProperties;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.security.spec.KeySpec;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -16,15 +24,34 @@ public class PyzzFileManager {
         return instance;
     }
 
+    // CRYPTO
+
+    private static final String password = "OarhCkfmJZlGmwMvdgoZViMhzrMVmqcQ";
+    private static final int keySize = 128;
+    private static final int pswdIterations = 65536;
+    private static final String symmetricAlgorithm = "AES/CBC/PKCS5Padding";
+    private static final String secretKeyFactoryAlgorithm = "PBKDF2WithHmacSHA1";
+
+    private static final byte[] salt = "1132695652610781".getBytes();
+    private static final byte[] iv = "3180167959068887".getBytes();
+
     // CLASS
 
     private PyzzFileManager() {
+    }
+
+    private SecretKeySpec createSecretKey() throws Exception {
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, pswdIterations, keySize);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(secretKeyFactoryAlgorithm);
+        byte[] key = factory.generateSecret(spec).getEncoded();
+        return new SecretKeySpec(key, "AES");
     }
 
     public String readNormal(File file) throws IOException {
 
         String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
         String[] path = file.getAbsolutePath().split("\\.");
+        // Auto encode
         if (path.length > 1 && path[path.length - 1].equals("json")) {
             StringBuilder strBuilder = new StringBuilder();
             for (int i = 0; i < path.length; i++) {
@@ -36,83 +63,44 @@ public class PyzzFileManager {
                     strBuilder.append(path[i]);
             }
             File newFile = new File(strBuilder.toString());
-            encode(newFile, content);
+            try {
+                encode(newFile, content);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return content;
     }
 
-    public void encode(File file, String content) {
-        try (FileOutputStream output = new FileOutputStream(file); Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), StandardCharsets.UTF_8)) {
-            writer.write(content);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public void encode(File file, String content) throws Exception {
+        SecretKeySpec secretKeySpec = createSecretKey();
+        Cipher cipher = Cipher.getInstance(symmetricAlgorithm);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
+        byte[] encryptedContent = cipher.doFinal(content.getBytes(StandardCharsets.UTF_8));
+
+        try (FileOutputStream output = new FileOutputStream(file);
+             GZIPOutputStream gzipOut = new GZIPOutputStream(output);
+             OutputStreamWriter writer = new OutputStreamWriter(gzipOut, StandardCharsets.UTF_8)) {
+            writer.write(Base64.getEncoder().encodeToString(encryptedContent));
         }
     }
 
-    public String decode(File file) throws IOException {
-        try (FileInputStream input = new FileInputStream(file)) {
-            InputStreamReader reader = new InputStreamReader(new GZIPInputStream(input), StandardCharsets.UTF_8);
+    public String decode(File file) throws Exception {
+        SecretKeySpec secretKeySpec = createSecretKey();
+        Cipher cipher = Cipher.getInstance(symmetricAlgorithm);
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
+
+        try (FileInputStream input = new FileInputStream(file);
+             GZIPInputStream gzipIn = new GZIPInputStream(input);
+             InputStreamReader reader = new InputStreamReader(gzipIn, StandardCharsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
             StringBuilder builder = new StringBuilder();
-            int c;
-            while ((c = reader.read()) != -1) {
-                builder.append((char) c);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                builder.append(line);
             }
-            return builder.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            byte[] decryptedContent = cipher.doFinal(Base64.getDecoder().decode(builder.toString()));
+            return new String(decryptedContent, StandardCharsets.UTF_8);
         }
     }
-
-    // OBSOLETE (encryption)
-
-    /*
-
-    private static final int[] key = {
-            96, -27, 95, -3, -1, 30, -6, -28,
-            1, -25, 67, 47, 25, 15, 88, 90
-    };
-
-    public void encrypt(File file, String content) {
-
-        try (FileWriter writer = new FileWriter(file)) {
-            int i = 0;
-            for (byte val : content.getBytes(StandardCharsets.UTF_8)) {
-                val += key[i];
-                writer.write(val);
-                i++;
-                i %= key.length;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String decrypt(File file) throws IOException {
-
-        try (FileReader reader = new FileReader(file)) {
-            ArrayList<Byte> bytes = new ArrayList<>();
-            byte val;
-            int i = 0;
-            while ((val = (byte) reader.read()) != -1) {
-                System.out.print(val);
-                System.out.print(" ");
-                val -= key[i];
-                bytes.add(val);
-                i++;
-                i %= key.length;
-            }
-            byte[] arr = new byte[bytes.size()];
-            i = 0;
-            System.out.println("\n=============================\n");
-            for (Byte b : bytes) {
-                System.out.print(b);
-                System.out.print(" ");
-                arr[i] = b;
-                i++;
-            }
-            System.out.println();
-            return new String(arr, StandardCharsets.UTF_8);
-        }
-    }
-    */
 }

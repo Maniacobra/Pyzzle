@@ -16,4 +16,6 @@ module com.maniacobra.pyzzle {
     opens com.maniacobra.pyzzle.properties to javafx.fxml;
     exports com.maniacobra.pyzzle.resources;
     opens com.maniacobra.pyzzle.resources to javafx.fxml;
+    exports com.maniacobra.pyzzle.utils;
+    opens com.maniacobra.pyzzle.utils to javafx.fxml;
 }

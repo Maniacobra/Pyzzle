@@ -3,6 +3,7 @@ package com.maniacobra.pyzzle.views.blockeditor;
 import com.maniacobra.pyzzle.controllers.ExerciseController;
 import com.maniacobra.pyzzle.models.Word;
 import com.maniacobra.pyzzle.properties.AppStyle;
+import com.maniacobra.pyzzle.properties.AppSettings;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -13,8 +14,6 @@ import java.util.List;
 import java.util.Stack;
 
 public class BlockEditor {
-
-    private final boolean dragAndDrop;
 
     private static final int sep = AppStyle.Values.blockSep;
     private static final int margin = (int) (sep * 2.5f);
@@ -36,9 +35,8 @@ public class BlockEditor {
     private final EventHandler<MouseEvent> eventHandlerPressed;
     private final EventHandler<MouseEvent> eventHandlerExited;
 
-    public BlockEditor(Canvas canvas, ExerciseController controller, boolean construction, boolean dragAndDrop) {
+    public BlockEditor(Canvas canvas, ExerciseController controller, boolean construction) {
 
-        this.dragAndDrop = dragAndDrop;
         this.construction = construction;
         this.canvas = canvas;
         gc = canvas.getGraphicsContext2D();
@@ -210,7 +208,7 @@ public class BlockEditor {
                 wordLine.add(word);
             fillLine(wordLine, previewLine);
         }
-        if (!dragAndDrop)
+        if (!AppSettings.getInstance().dragAndDrop)
             ignoreNextClick = true;
         previewLine = -1;
         draw();
@@ -266,7 +264,7 @@ public class BlockEditor {
             previewLine = -1;
             draw();
         }
-        if (!dragAndDrop)
+        if (!AppSettings.getInstance().dragAndDrop)
             ignoreNextClick = true;
     }
 

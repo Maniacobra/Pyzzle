@@ -3,6 +3,7 @@ package com.maniacobra.pyzzle.models;
 import com.maniacobra.pyzzle.Launcher;
 import com.maniacobra.pyzzle.controllers.ExerciseController;
 import com.maniacobra.pyzzle.properties.AppProperties;
+import com.maniacobra.pyzzle.properties.AppSettings;
 import com.maniacobra.pyzzle.resources.PyzzFileManager;
 import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.PyzzleMain;
@@ -23,6 +24,16 @@ import java.util.Map;
 
 public class ExerciseManager {
 
+    private enum OpeningResult {
+        OK,
+        UNKNOWN_ERROR,
+        SOFTWARE_ERROR,
+        OPENING_ERROR,
+        PARSING_ERROR,
+        DATA_ERROR,
+        SAVING_ERROR
+    }
+
     private JSONObject loadedData = null;
     private final ArrayList<JSONObject> exercises = new ArrayList<>();
     private boolean hasCompletion = false;
@@ -34,21 +45,16 @@ public class ExerciseManager {
 
     private final HashMap<Integer, JSONObject> savedCompletion = new HashMap<>();
 
-    private File openedFile = null;
     private File saveFile = null;
 
     // Pane saving
+    private AnchorPane currentPane = null; // Non-affected by pane saving
     private final boolean paneSaving = false;
     private final HashMap<Integer, ExerciseController> loadedControllers = new HashMap<>();
     private final HashMap<Integer, AnchorPane> loadedPanes = new HashMap<>();
 
     public boolean openFile(File file, BorderPane borderPane) {
-        /*
-         * 0 = Aucun problème
-         * 1 = Problème du pack
-         * 2 = Problème d'interface
-         * 3 = Problème d'exercice
-         */
+
         System.out.println("Opening : " + file.getAbsolutePath());
         try {
             String data;
@@ -61,37 +67,30 @@ public class ExerciseManager {
             String fileType = loadedData.get("file_type").toString();
             hasCompletion = fileType.equals("opened_pack");
             if (fileType.equals("pack") || hasCompletion) {
-                int result = loadPack(loadedData, borderPane, hasCompletion);
-                if (result != 0)
+                OpeningResult result = loadPack(loadedData, borderPane, hasCompletion);
+                if (result != OpeningResult.OK)
                     displayErrorMessage(result);
                 else
                     packName = file.getName();
-                openedFile = file;
+                AppSettings.getInstance().lastOpenedPath = file.getAbsolutePath();
                 if (hasCompletion)
-                    saveFile = openedFile;
+                    saveFile = file;
                 return true;
             }
         } catch (IOException e) {
             e.printStackTrace(Launcher.output);
-            Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors de l'ouverture du fichier",
-                    "Le logiciel n'est pas parvenu à ouvrir ce fichier, vérifiez les permissions.");
+            displayErrorMessage(OpeningResult.OPENING_ERROR);
         } catch (ParseException e) {
             e.printStackTrace(Launcher.output);
-            Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors de l'ouverture du fichier",
-                    "Un problème est survenu lors de la lecture des données du fichier.");
+            displayErrorMessage(OpeningResult.PARSING_ERROR);
         } catch (Exception e) {
             e.printStackTrace(Launcher.output);
-            displayErrorMessage(1);
+            displayErrorMessage(OpeningResult.UNKNOWN_ERROR);
         }
         return false;
     }
 
-    public int loadPack(JSONObject jsonData, BorderPane borderPane, boolean hasCompletion) {
-        /*
-         * 0 = Success
-         * 1 = Loading error
-         * 2 = Graphics error
-         */
+    public OpeningResult loadPack(JSONObject jsonData, BorderPane borderPane, boolean hasCompletion) {
         try {
             resetPack(borderPane);
             maxScore = 0;
@@ -114,7 +113,6 @@ public class ExerciseManager {
                     i++;
                 }
             }
-
             // First exercise
             JSONObject exerciseCompletion = null;
             if (hasCompletion)
@@ -124,7 +122,7 @@ public class ExerciseManager {
         }
         catch (Exception e) {
             e.printStackTrace(Launcher.output);
-            return 1;
+            return OpeningResult.UNKNOWN_ERROR;
         }
     }
 
@@ -147,8 +145,8 @@ public class ExerciseManager {
         JSONObject exerciseCompletion = savedCompletion.get(number);
         ExerciseConfig config = new ExerciseConfig(exercises.get(number), number, exercises.size(), currentScore, maxScore, exerciseCompletion);
 
-        int result = loadExercise(borderPane, config);
-        if (result != 0)
+        OpeningResult result = loadExercise(borderPane, config);
+        if (result != OpeningResult.OK)
             displayErrorMessage(result);
     }
 
@@ -157,6 +155,7 @@ public class ExerciseManager {
         saveData();
     }
 
+    @SuppressWarnings("unchecked")
     public void saveData() {
 
         if (loadedData == null || saveFile == null)
@@ -184,7 +183,12 @@ public class ExerciseManager {
         completion.put("exercises", completedExercises);
         data.put("completion", completion);
 
-        PyzzFileManager.getInstance().encode(saveFile, data.toJSONString());
+        try {
+            PyzzFileManager.getInstance().encode(saveFile, data.toJSONString());
+            AppSettings.getInstance().lastOpenedPath = saveFile.getAbsolutePath();
+        } catch (Exception e) {
+            displayErrorMessage(OpeningResult.SAVING_ERROR);
+        }
     }
 
     public String getSaveFileName() {
@@ -199,9 +203,13 @@ public class ExerciseManager {
         return saveFile != null;
     }
 
+    public AnchorPane getCurrentPane() {
+        return currentPane;
+    }
+
     // PRIVATE
 
-    private int loadExercise(BorderPane borderPane, ExerciseConfig config) {
+    private OpeningResult loadExercise(BorderPane borderPane, ExerciseConfig config) {
 
         FXMLLoader fxmlLoader = new FXMLLoader(PyzzleMain.class.getResource("exercise-view.fxml"));
         try {
@@ -212,9 +220,10 @@ public class ExerciseManager {
                 System.gc();
             }
             AnchorPane pane = fxmlLoader.load();
+            currentPane = pane;
             ExerciseController controller = fxmlLoader.getController();
             if (!controller.loadConfig(config))
-                return 3;
+                return OpeningResult.DATA_ERROR;
             currentController = controller;
             currentController.setManger(this);
             if (paneSaving) {
@@ -222,25 +231,30 @@ public class ExerciseManager {
                 loadedControllers.put(config.exerciseNumber(), currentController);
             }
             borderPane.setCenter(pane);
-            return 0;
+            return OpeningResult.OK;
         }
         catch (IOException e) {
             e.printStackTrace(Launcher.output);
-            return 2;
+            return OpeningResult.SOFTWARE_ERROR;
         }
     }
 
-    private void displayErrorMessage(int code) {
+    private void displayErrorMessage(OpeningResult oResult) {
 
-        if (code == 1)
-            Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors de l'ouverture du fichier",
-                    "Le fichier semble avoir des données manquantes, mal formattées ou invalides. Impossible d'ouvrir.");
-        else if (code == 2)
-            Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors du chargement l'exercise",
-                    "Une erreur inconnue s'est produite lors du chargement de l'interface.");
-        else if (code == 3)
-            Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors du chargement de l'exercice",
-                    "Impossible de charger l'exercice, des données du fichier semblent manquantes, mal formattées ou invalides.");
+        switch (oResult) {
+            case UNKNOWN_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Erreur",
+                    "Une erreur inconnue, interne au logiciel, s'est produite lors du chagement de l'exercice.");
+            case SOFTWARE_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Erreur lors du chargement l'exercise",
+                    "Une erreur inconnue, interne au logiciel, s'est produite lors du chargement de l'interface");
+            case OPENING_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzze : Erreur lors de l'ouverture du fichier",
+                    "Pyzzle n'est pas parvenu à ouvrir ce fichier, vérifiez les permissions du programme et l'accessibilité du fichier.");
+            case PARSING_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Erreur lors du chargement de l'exercice",
+                    "Le fichier semble être corrompu ou de format invalide. Impossible d'ouvrir");
+            case DATA_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Erreur lors du chargement de l'exercice",
+                    "Le fichier semble avoir des informations manquantes, mal formattées ou invalides. Impossible d'ouvrir.");
+            case SAVING_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Impossible de sauvegarder",
+                    "Une erreur inconnue s'est produite lors de la sauvegarde de l'exercice, vérifiez les permissions.");
+        }
     }
 
     private void resetPack(BorderPane borderPane) {

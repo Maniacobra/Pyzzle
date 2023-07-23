@@ -2,6 +2,7 @@ package com.maniacobra.pyzzle.controllers;
 
 import com.maniacobra.pyzzle.models.*;
 import com.maniacobra.pyzzle.properties.AppProperties;
+import com.maniacobra.pyzzle.properties.AppSettings;
 import com.maniacobra.pyzzle.resources.CodeRunner;
 import com.maniacobra.pyzzle.views.PyzzleMain;
 import com.maniacobra.pyzzle.views.blockeditor.BlockEditor;
@@ -75,7 +76,6 @@ public class ExerciseController {
 
     private WordBlock selectedBlock = null;
     private Canvas blockCanvas = null;
-    private final boolean dragAndDrop = true;
 
     private int mouseX = 0;
     private int mouseY = 0;
@@ -94,9 +94,22 @@ public class ExerciseController {
         anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, this::updateMouse);
         anchorPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this::updateMouse);
 
-        anchorPane.addEventFilter(dragAndDrop ? MouseEvent.MOUSE_RELEASED : MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-            if (blockCanvas != null) {
+        // No drag-and-drop
+        anchorPane.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+            if (!AppSettings.getInstance().dragAndDrop && blockCanvas != null) {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY && codeEditor.insertWord(selectedBlock.getWord()))
+                    updateCode();
+                else {
+                    wordSelection.returnWord(selectedBlock.getWord());
+                    wordSelection.draw();
+                }
+                removeSelection();
+            }
+        });
+        // With drag-and-drop
+        anchorPane.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
+            if (AppSettings.getInstance().dragAndDrop && blockCanvas != null && mouseEvent.getButton() == MouseButton.PRIMARY) {
+                if (codeEditor.insertWord(selectedBlock.getWord()))
                     updateCode();
                 else {
                     wordSelection.returnWord(selectedBlock.getWord());
@@ -118,7 +131,8 @@ public class ExerciseController {
             lock();
         codeEditor.draw();
         // AUTO-SAVE
-        manager.saveData();
+        if (AppSettings.getInstance().autoSave)
+            manager.saveData();
     }
 
     @FXML
@@ -191,8 +205,8 @@ public class ExerciseController {
             codeEditor.delete();
         if (wordSelection != null)
             wordSelection.delete();
-        codeEditor = new BlockEditor(canvasCodeEditor, this, true, dragAndDrop);
-        wordSelection = new BlockEditor(canvasWordSelection, this, false, dragAndDrop);
+        codeEditor = new BlockEditor(canvasCodeEditor, this, true);
+        wordSelection = new BlockEditor(canvasWordSelection, this, false);
         // Draw
         wordSelection.fill(model.getWords());
         codeEditor.draw();
@@ -308,20 +322,20 @@ public class ExerciseController {
 
         int halfX = (int)(blockCanvas.getWidth() / 2);
         int halfY = (int)(blockCanvas.getHeight() / 2);
-        int maxX = (int)(anchorPane.getWidth()) - halfX - 5;
-        int maxY = (int)(anchorPane.getHeight()) - halfY - 5;
+        int maxX = (int)(anchorPane.getWidth() - blockCanvas.getWidth() - 2);
+        int maxY = (int)(anchorPane.getHeight() - blockCanvas.getHeight() - 2);
 
         int x = mouseX - halfX;
         int y = mouseY - halfY;
 
         if (x > maxX)
             x = maxX;
-        else if (x < halfX)
-            x = halfX;
+        else if (x < 0)
+            x = 0;
         if (y > maxY)
             y = maxY;
-        else if (y < halfY)
-            y = halfY;
+        else if (y < 0)
+            y = 0;
         blockCanvas.setLayoutX(x);
         blockCanvas.setLayoutY(y);
     }

@@ -1,3 +1,38 @@
 .root {
     -fx-focus-color: transparent;
 }
+
+.mbutton {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-padding: 5px 10px;
+}
+
+.mbutton:hover {
+    -fx-background-color: lightgray;
+}
+
+.mbutton:showing {
+    -fx-background-color: gray;
+    -fx-text-fill: white;
+}
+
+.mbutton .label {
+    -fx-text-fill: black;
+}
+
+.mbutton:showing .label {
+    -fx-text-fill: white;
+}
+
+.mbutton .context-menu {
+    -fx-background-color: white;
+}
+
+.mbutton .context-menu .menu-item .label {
+    -fx-text-fill: black;
+}
+
+.mbutton .context-menu .menu-item:hover {
+    -fx-background-color: lightgray;
+}
