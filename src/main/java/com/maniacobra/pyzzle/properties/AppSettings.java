@@ -37,6 +37,8 @@ public class AppSettings {
 
     // CLASS
 
+    public String userName = "";
+    public boolean updateName = false;
     public boolean autoSave = true;
     public boolean dragAndDrop = true;
     public boolean autoArgs = true;
@@ -50,6 +52,8 @@ public class AppSettings {
     public void save() {
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("userName", userName);
+        jsonObject.put("updateName", updateName);
         jsonObject.put("autoSave", autoSave);
         jsonObject.put("dragAndDrop", dragAndDrop);
         jsonObject.put("autoArgs", autoArgs);
@@ -80,7 +84,7 @@ public class AppSettings {
     private String getString(JSONObject jsonObject, String key, String defaultVal) {
         if (!jsonObject.containsKey(key))
             return defaultVal;
-        if (jsonObject.get(key) instanceof Boolean) {
+        if (jsonObject.get(key) instanceof String) {
             return (String) jsonObject.get(key);
         }
         return defaultVal;
@@ -101,6 +105,8 @@ public class AppSettings {
 
             JSONObject jsonObject = (JSONObject) obj;
 
+            userName = getString(jsonObject, "userName", userName);
+            updateName = getBool(jsonObject, "updateName", updateName);
             autoSave = getBool(jsonObject, "autoSave", autoSave);
             dragAndDrop = getBool(jsonObject, "dragAndDrop", dragAndDrop);
             autoArgs = getBool(jsonObject, "autoArgs", autoArgs);

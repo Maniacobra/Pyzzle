@@ -47,7 +47,7 @@ public class MainController {
     public void menuSave() {
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName(manager.getSaveFileName());
+        fileChooser.setInitialFileName(manager.getSaveFileSuggestion());
         File file = fileChooser.showSaveDialog(Stage.getWindows().get(0));
         if (file != null) {
             manager.saveData(file);
@@ -71,7 +71,7 @@ public class MainController {
                 returnText = "Retour à l'écran d'accueil";
             else
                 returnText = "Retour à l'exercice";
-            controller.init(manager.getCurrentPane(), borderPane, returnText);
+            controller.init(manager.getCurrentPane(), borderPane, returnText, manager.isExamMode());
             borderPane.setCenter(pane);
         } catch (IOException e) {
             throw new RuntimeException(e);

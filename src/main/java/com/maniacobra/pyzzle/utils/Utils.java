@@ -51,6 +51,13 @@ public class Utils {
         alert.showAndWait();
     }
 
+    public static String convertToFileName(String input) {
+        String invalidChars = "[\\\\/:*?\"<>|]";
+        String safeFileName = input.replaceAll(invalidChars, "_");
+        safeFileName = safeFileName.trim();
+        return safeFileName;
+    }
+
     public static void copyDirectory(File sourceLocation, File targetLocation) throws IOException {
         // https://stackoverflow.com/a/1146221/13313951
 

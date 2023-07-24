@@ -33,6 +33,11 @@
     -fx-text-fill: black;
 }
 
-.mbutton .context-menu .menu-item:hover {
+.mbutton .context-menu .menu-item:hover,
+.mbutton .context-menu .menu-item:focused,
+.mbutton .context-menu .menu-item:showing,
+.mbutton .context-menu .menu-button:hover .label,
+.mbutton .context-menu .menu-button:focused .label,
+.mbutton .context-menu .menu-button:showing .label {
     -fx-background-color: lightgray;
 }

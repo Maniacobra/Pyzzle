@@ -15,16 +15,19 @@
 
 <VBox spacing="15.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.maniacobra.pyzzle.controllers.SettingsController">
    <children>
-      <Button fx:id="buttonReturn" mnemonicParsing="false" onAction="#quitSettings" prefHeight="37.0" prefWidth="217.0" text="Retour">
+      <Button fx:id="buttonReturn" mnemonicParsing="false" onAction="#quitSettings" prefHeight="37.0" prefWidth="217.0" text="Sauvegarder et retour">
          <font>
             <Font name="System Bold" size="13.0" />
          </font></Button>
-      <Label text="Toute modification des préférences est enregistrée automatiquement." />
       <Label text="Préférences">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
+      <Separator layoutX="40.0" layoutY="132.0" prefWidth="200.0" />
+      <Label text="Nom d'utilisateur :" />
+      <TextField fx:id="textfUserName" maxWidth="500.0" />
+      <CheckBox fx:id="cbUpdateName" mnemonicParsing="false" onAction="#updateSettings" text="Mettre à jour automatiquement le nom inscrit sur les exercices" />
       <Separator prefWidth="200.0" />
       <CheckBox fx:id="cbAutoSave" mnemonicParsing="false" onAction="#updateSettings" text="Sauvegarde automatique" />
       <Label text="Si activé, la sauvegarde s'active à chaque fois que le code est exécuté." />
@@ -51,11 +54,11 @@
          </toggleGroup>
       </RadioButton>
       <RadioButton fx:id="radioCustomArgs" mnemonicParsing="false" onAction="#updateSettings" text="Configurer manuellement les arguments de terminal pour appeler Python :" toggleGroup="$terminalArgs" />
-      <TextField fx:id="textfArgs" maxWidth="500.0" onAction="#updateSettings" prefWidth="241.0" />
+      <TextField fx:id="textfArgs" maxWidth="500.0" />
       <Label fx:id="labelArgs" text="(Les arguments sont séparés par des espaces)" />
       <Button mnemonicParsing="false" onAction="#checkPyzzle" text="Vérifier le fonctionnement" />
    </children>
    <padding>
-      <Insets left="30.0" top="30.0" />
+      <Insets left="30.0" right="30.0" top="30.0" />
    </padding>
 </VBox>

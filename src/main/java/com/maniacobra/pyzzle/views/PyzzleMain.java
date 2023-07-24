@@ -81,26 +81,26 @@ public class PyzzleMain extends Application {
 
 /* TO-DO
  *
- * === PRIORITAIRE ===
+ * === PETITS TRUCS ===
  *
- * Erreur version
- * Logo
- * Page d'accueil : Possibilité de charger dernier fichier
- * Demande de nom + enregistrement
- *
- * === NEXT ===
- *
+ * Afficher nom utilisateur
  * Bulles d'aide pour chaque exercice
- * File load version check
  * Upgrade popups (auto line break)
+ * Logo*
+ * Version check
+ * Site web
+ * Machintosh
+ * "Mode exercice" dans le coin
+ *
+ * === GROS TRUCS ===
+ *
+ * Page d'accueil
+ * Intro exercice*
  * Éditeur d'énoncés
  * Analyze des notes
- * Test Machintosh
- * Site web
  *
  * === BUGS ===
  *
- * Bleu dans la toolbar
  * Couleur zone de construction
  * Caractères spéciaux
  * Changement de disposition de fenêtre à chaque exercice

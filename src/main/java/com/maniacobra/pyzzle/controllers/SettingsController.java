@@ -16,6 +16,10 @@ public class SettingsController {
     @FXML
     private Button buttonReturn;
     @FXML
+    private TextField textfUserName;
+    @FXML
+    private CheckBox cbUpdateName;
+    @FXML
     private CheckBox cbAutoSave;
     @FXML
     private CheckBox cbDragAndDrop;
@@ -43,13 +47,17 @@ public class SettingsController {
         System.gc();
     }
 
-    public void init(Pane returnPane, BorderPane mainPane, String returnText) {
+    public void init(Pane returnPane, BorderPane mainPane, String returnText, boolean examMode) {
 
         this.returnPane = returnPane;
         this.mainPane = mainPane;
 
         buttonReturn.setText(returnText);
         updateUI();
+
+        textfUserName.setDisable(examMode);
+        cbUpdateName.setDisable(examMode);
+        cbAutoSave.setDisable(examMode);
 
         if (FilePaths.getInstance().getPythonExePath() == null)
             radioAutoArgs.setText("Trouver Python automatiquement sur le système");
@@ -59,6 +67,8 @@ public class SettingsController {
     public void updateSettings() {
 
         AppSettings settings = AppSettings.getInstance();
+        settings.userName = textfUserName.getText();
+        settings.updateName = cbUpdateName.isSelected();
         settings.autoSave = cbAutoSave.isSelected();
         settings.dragAndDrop = cbDragAndDrop.isSelected();
         settings.autoArgs = radioAutoArgs.isSelected();
@@ -82,6 +92,8 @@ public class SettingsController {
     private void updateUI() {
 
         AppSettings settings = AppSettings.getInstance();
+        textfUserName.setText(settings.userName);
+        cbUpdateName.setSelected(settings.updateName);
         cbAutoSave.setSelected(settings.autoSave);
         cbDragAndDrop.setSelected(settings.dragAndDrop);
 

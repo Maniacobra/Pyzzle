@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -48,6 +49,8 @@ public class ExerciseController {
     private Text textAttempts;
     @FXML
     private Text textScore;
+    @FXML
+    private Label labelUserName;
     // Buttons
     @FXML
     private Button buttonExecution;
@@ -304,6 +307,10 @@ public class ExerciseController {
 
     public void updateScore(float score) {
         model.setTotalScore(score, nodes);
+    }
+
+    public void updateUserName(String userName) {
+        labelUserName.setText(userName);
     }
 
     // PRIVATE

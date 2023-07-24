@@ -1,6 +1,9 @@
 {
+  "pack_name": "Introduction à Pyzzle et Python",
+  "author": "Maniacobra (dev)",
   "file_type": "pack",
   "pyzzle_version": "indev",
+  "strict_mode": 0,
   "exercises": [
     {
       "name": "Hello World",
