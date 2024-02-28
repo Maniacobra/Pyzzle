@@ -33,11 +33,13 @@ public class IntroController {
     Label labelExam;
     @FXML
     Button buttonStart;
+    @FXML
+    Label labelAttempts;
 
     private ExerciseManager manager;
     private boolean forceInfos = false;
 
-    public void init(ExerciseManager manager, String packName, String author, boolean forceInfos, boolean examMode) {
+    public void init(ExerciseManager manager, String packName, String author, boolean forceInfos, boolean examMode, int attemptsCount) {
         this.manager = manager;
         this.forceInfos = forceInfos;
 
@@ -57,6 +59,7 @@ public class IntroController {
         labelPackName.setText(packName);
         labelAuthor.setVisible(!author.isEmpty());
         labelAuthor.setText("Pack d'exercices créé par " + author);
+        labelAttempts.setText("Ouverture n°" + attemptsCount);
     }
 
     @FXML

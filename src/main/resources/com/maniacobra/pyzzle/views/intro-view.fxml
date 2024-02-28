@@ -77,11 +77,15 @@
                </padding>
             </GridPane>
             <Separator prefWidth="200.0" />
-            <Label fx:id="labelExam" text="/!\ Mode examen activé /!\" textFill="RED" />
+            <Label fx:id="labelExam" text="/!\ Mode examen activé /!\" textFill="RED">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font></Label>
             <Button fx:id="buttonStart" mnemonicParsing="false" onAction="#startPack" prefHeight="51.0" prefWidth="318.0" text="Commencer les exercices">
                <font>
                   <Font name="System Bold" size="17.0" />
                </font></Button>
+            <Label fx:id="labelAttempts" text="[Tentative]" />
          </children>
       </VBox>
    </center>

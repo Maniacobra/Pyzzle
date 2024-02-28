@@ -373,7 +373,7 @@ public class ExerciseModel {
                     ArrayList<String> ds = new ArrayList<>();
                     datasets.add(ds);
                     for (Object elem2 : (JSONArray) elem)
-                        ds.add((String) elem2);
+                        ds.add(String.valueOf(elem2));
                 }
             // Objectives
             for (Object elem : (JSONArray) data.get("objectives")) {
@@ -419,6 +419,8 @@ public class ExerciseModel {
             return true;
         }
         catch (Exception | AssertionError e) {
+            Utils.systemAlert(Alert.AlertType.ERROR, "Erreur lors du chargement de l'exercice",
+                    "L'exercice semble avoir des données manquantes ou mal formatées, et n'a pas pu être chargé.");
             e.printStackTrace(Launcher.output);
             return false;
         }

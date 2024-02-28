@@ -5,6 +5,7 @@ import com.maniacobra.pyzzle.controllers.ExerciseController;
 import com.maniacobra.pyzzle.controllers.IntroController;
 import com.maniacobra.pyzzle.properties.AppProperties;
 import com.maniacobra.pyzzle.properties.AppSettings;
+import com.maniacobra.pyzzle.resources.IdsRegistry;
 import com.maniacobra.pyzzle.resources.PyzzFileManager;
 import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.PyzzleMain;
@@ -43,6 +44,7 @@ public class ExerciseManager {
     private String authorName;
     private String userName;
     private int strictMode;
+    private String uuid;
 
     // Pack completion memory
     private JSONObject loadedData = null;
@@ -75,6 +77,7 @@ public class ExerciseManager {
         authorName = null;
         userName = null;
         strictMode = 0;
+        uuid = "-";
     }
 
     public boolean openFile(File file, BorderPane mainPane) {
@@ -82,15 +85,40 @@ public class ExerciseManager {
         this.mainPane = mainPane;
         System.out.println("Opening : " + file.getAbsolutePath());
         try {
-            String data;
-            if (file.getName().endsWith(".json"))
-                data = PyzzFileManager.getInstance().readNormal(file);
-            else
-                data = PyzzFileManager.getInstance().decode(file);
-            JSONParser parser = new JSONParser();
-            JSONObject jsonData = (JSONObject) parser.parse(data);
-            String fileType = jsonData.get("file_type").toString();
-            boolean hasCompletion = fileType.equals("opened_pack");
+            // Load data
+            JSONObject jsonData;
+            try {
+                String data;
+                if (file.getName().endsWith(".json"))
+                    data = PyzzFileManager.getInstance().readNormal(file);
+                else
+                    data = PyzzFileManager.getInstance().decode(file);
+                JSONParser parser = new JSONParser();
+                jsonData = (JSONObject) parser.parse(data);
+            } catch (IOException e) {
+                e.printStackTrace(Launcher.output);
+                displayErrorMessage(OpeningResult.OPENING_ERROR);
+                return false;
+            }
+            // Version and type
+            String fileType;
+            boolean hasCompletion;
+            try {
+                String version = jsonData.get("pyzzle_version").toString();
+                if (!version.equals(AppProperties.version)) {
+                    Utils.systemAlert(Alert.AlertType.WARNING, "Attention : Versions potentiellement incompatibles",
+                            String.format("La version du fichier ouvert (%s) " +
+                                    "est potentiellement incompatible avec la version installée de Pyzzle (%s). " +
+                                    "Il est probable que des erreurs surviennent.", version, AppProperties.version));
+                }
+                fileType = jsonData.get("file_type").toString();
+                hasCompletion = fileType.equals("opened_pack");
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                displayErrorMessage(OpeningResult.DATA_ERROR);
+                return false;
+            }
+            // Load pack
             if (fileType.equals("pack") || hasCompletion) {
                 OpeningResult result = loadPack(jsonData, hasCompletion);
                 if (result != OpeningResult.OK) {
@@ -106,9 +134,6 @@ public class ExerciseManager {
                     return true;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace(Launcher.output);
-            displayErrorMessage(OpeningResult.OPENING_ERROR);
         } catch (ParseException e) {
             e.printStackTrace(Launcher.output);
             displayErrorMessage(OpeningResult.PARSING_ERROR);
@@ -153,7 +178,8 @@ public class ExerciseManager {
     @SuppressWarnings("unchecked")
     public boolean saveData() {
 
-        updateName();
+        if (currentController != null)
+            updateName();
         if (loadedData == null || saveFile == null)
             return false;
 
@@ -166,6 +192,7 @@ public class ExerciseManager {
         completion.put("total_score", currentController.getModel().getTotalScore());
         completion.put("last_panel", currentController.getModel().getExerciseNumber());
         completion.put("user_name", userName);
+        completion.put("attempt", IdsRegistry.getInstance().getCount(uuid));
 
         // Completed exercises
         JSONArray completedExercises = new JSONArray();
@@ -228,16 +255,29 @@ public class ExerciseManager {
         return userName != null;
     }
 
+    public boolean isLoaded() {
+        return currentPane != null;
+    }
+
     // PRIVATE
 
-    private OpeningResult loadPack(JSONObject jsonData, boolean hasCompletion) {
-        resetPack(mainPane);
+    private OpeningResult loadPack(JSONObject jsonData, boolean hasCompletion) throws IOException {
+
+        resetPack();
+
+        int starting = 0;
+        float totalScore = 0.f;
+        JSONObject exerciseCompletion = null;
+
         try {
             loadedData = jsonData;
             // Infos
-            packName = (String) jsonData.get("pack_name");
-            authorName = (String) jsonData.get("author");
+            packName = jsonData.get("pack_name").toString();
+            authorName = jsonData.get("author").toString();
             strictMode = Utils.getInt(jsonData, "strict_mode");
+            // UUID
+            uuid = jsonData.get("uuid").toString();
+            IdsRegistry.getInstance().incrementId(uuid);
             // Load exercises
             maxScore = 0;
             for (Object obj : (JSONArray) jsonData.get("exercises")) {
@@ -246,15 +286,12 @@ public class ExerciseManager {
                 maxScore += Utils.getFloat(jsonExo, "coef");
                 packLength++;
             }
-            int starting = 0;
-            float totalScore = 0.f;
             // Completion
-            JSONObject exerciseCompletion = null;
             if (hasCompletion) {
                 JSONObject completion = (JSONObject) jsonData.get("completion");
                 starting = Utils.getInt(completion, "last_panel");
                 totalScore = Utils.getFloat(completion, "total_score");
-                userName = (String) completion.get("user_name");
+                userName = completion.get("user_name").toString();
                 int i = 0;
                 for (Object completed : (JSONArray) completion.get("exercises")) {
                     savedCompletion.put(i, (JSONObject) completed);
@@ -262,37 +299,34 @@ public class ExerciseManager {
                 }
                 exerciseCompletion = (JSONObject) ((JSONArray) completion.get("exercises")).get(starting);
             }
-            // Start
-            ExerciseConfig firstExercise = new ExerciseConfig(exercises.get(starting), starting, exercises.size(), totalScore, maxScore, exerciseCompletion);
-            loadExercise(firstExercise, hasCompletion);
-            if (strictMode >= 2) {
-                AppSettings.getInstance().autoSave = true;
-                AppSettings.getInstance().updateName = false;
-            }
-            if (!hasCompletion)
-                loadIntro(mainPane);
-            else {
-                StringBuilder builder = new StringBuilder();
-                if (packName != null && !packName.isEmpty())
-                    builder.append("Titre du pack d'exercices :\n").append(packName).append("\n\n");
-                if (userName != null && !userName.isEmpty())
-                    builder.append("Nom de l'utilisateur : ").append(userName).append("\n\n");
-                if (authorName != null && !authorName.isEmpty())
-                    builder.append("Nom du créateur du pack : ").append(authorName);
-                if (!builder.isEmpty())
-                    Utils.systemAlert(Alert.AlertType.INFORMATION, "Pyzzle : Informations sur le pack", builder.toString());
-            }
-
-            return OpeningResult.OK;
         }
         catch (NullPointerException e) {
             e.printStackTrace(Launcher.output);
             return OpeningResult.DATA_ERROR;
         }
-        catch (Exception e) {
-            e.printStackTrace();
-            return OpeningResult.UNKNOWN_ERROR;
+
+        // Start
+        ExerciseConfig firstExercise = new ExerciseConfig(exercises.get(starting), starting, exercises.size(), totalScore, maxScore, exerciseCompletion);
+        loadExercise(firstExercise, hasCompletion);
+        if (strictMode >= 2) {
+            AppSettings.getInstance().autoSave = true;
+            AppSettings.getInstance().updateName = false;
         }
+        if (!hasCompletion)
+            loadIntro(mainPane);
+        else {
+            StringBuilder builder = new StringBuilder();
+            if (packName != null && !packName.isEmpty())
+                builder.append("Titre du pack d'exercices :\n").append(packName).append("\n\n");
+            if (userName != null && !userName.isEmpty())
+                builder.append("Nom de l'utilisateur : ").append(userName).append("\n\n");
+            if (authorName != null && !authorName.isEmpty())
+                builder.append("Nom du créateur du pack : ").append(authorName);
+            if (!builder.isEmpty())
+                Utils.systemAlert(Alert.AlertType.INFORMATION, "Pyzzle : Informations sur le pack", builder.toString());
+        }
+
+        return OpeningResult.OK;
     }
 
     private OpeningResult loadExercise(ExerciseConfig config, boolean enableUI) {
@@ -333,7 +367,7 @@ public class ExerciseManager {
         FXMLLoader fxmlLoader = new FXMLLoader(PyzzleMain.class.getResource("intro-view.fxml"));
         introPane = fxmlLoader.load();
         IntroController controller = fxmlLoader.getController();
-        controller.init(this, packName, authorName, strictMode > 0, strictMode >= 2);
+        controller.init(this, packName, authorName, strictMode > 0, strictMode >= 2, IdsRegistry.getInstance().getCount(uuid));
         borderPane.setCenter(introPane);
     }
 
@@ -366,7 +400,7 @@ public class ExerciseManager {
         }
     }
 
-    private void resetPack(BorderPane borderPane) {
+    private void resetPack() {
         // Reset memory
         exercises.clear();
         if (currentController != null) {
@@ -379,7 +413,7 @@ public class ExerciseManager {
         // Reset UI
         currentPane = null;
         introPane = null;
-        borderPane.setCenter(null);
+        mainPane.setCenter(null);
         // Reset pane saving
         for (ExerciseController controller : loadedControllers.values())
             controller.clearMemory();

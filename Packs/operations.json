@@ -1,6 +1,10 @@
 {
   "file_type": "pack",
   "pyzzle_version": "indev",
+  "pack_name": "Opérateurs",
+  "author": "Maniacobra (dev)",
+  "strict_mode": 0,
+  "uuid": "TEST3",
   "exercises": [
     {
       "name": "Addition",

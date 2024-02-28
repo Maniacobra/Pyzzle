@@ -1,5 +1,7 @@
 package com.maniacobra.pyzzle.views;
 
+import com.maniacobra.pyzzle.controllers.MainController;
+import com.maniacobra.pyzzle.resources.IdsRegistry;
 import com.maniacobra.pyzzle.properties.FilePaths;
 import com.maniacobra.pyzzle.properties.AppSettings;
 import com.maniacobra.pyzzle.resources.CodeRunner;
@@ -7,10 +9,11 @@ import com.maniacobra.pyzzle.properties.AppProperties;
 import com.maniacobra.pyzzle.utils.Utils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -33,21 +36,28 @@ public class PyzzleMain extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        // Setup
+        // Singletons
         if (!FilePaths.load()) {
             Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Impossible de démarrer",
                     "Pyzzle n'est pas parvenu à préparer son démarrage correctement, vérifiez l'installation et les permissions du logiciel.");
             System.exit(1);
         }
         AppSettings.getInstance().load();
+        IdsRegistry.getInstance().load();
         // Tests
         CodeRunner.getInstance().pythonTest();
-
+        // Assertions
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
 
-        // Setup
-        FXMLLoader fxmlLoader = new FXMLLoader(PyzzleMain.class.getResource("main-view.fxml"));
-        Parent root = fxmlLoader.load();
+        // Create controller + load FXML
+        MainController controller = new MainController();
+        FXMLLoader rootFxmlLoader = new FXMLLoader(PyzzleMain.class.getResource("main-view.fxml"));
+        FXMLLoader welcomeFxmlLoader = new FXMLLoader(PyzzleMain.class.getResource("welcome-view.fxml"));
+        rootFxmlLoader.setController(controller);
+        welcomeFxmlLoader.setController(controller);
+
+        // Setup stage
+        BorderPane root = rootFxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(Objects.requireNonNull(PyzzleMain.class.getResource("style.css")).toExternalForm());
         stage.setMaximized(true);
@@ -63,6 +73,10 @@ public class PyzzleMain extends Application {
             if (ke.getCode().equals(KeyCode.SHIFT))
                 shiftPressed = false;
         });
+
+        // Welcome area
+        Pane welcomePane = welcomeFxmlLoader.load();
+        root.setCenter(welcomePane);
 
         // Show
         stage.show();
@@ -81,27 +95,36 @@ public class PyzzleMain extends Application {
 
 /* TO-DO
  *
- * === PETITS TRUCS ===
+ * === TO-DO PROTOTYPE ===
  *
- * Afficher nom utilisateur
- * Bulles d'aide pour chaque exercice
- * Upgrade popups (auto line break)
- * Logo*
- * Version check
- * Site web
- * Machintosh
- * "Mode exercice" dans le coin
- *
- * === GROS TRUCS ===
+ * Label dans le coin du borderpane
+ * Exo conditions
  *
  * Page d'accueil
- * Intro exercice*
- * Éditeur d'énoncés
  * Analyze des notes
  *
- * === BUGS ===
+ * Build release
  *
- * Couleur zone de construction
+ * === POST PROTOTYPE ===
+ *
+ * - Petits trucs -
+ *
+ * Bulles d'aide pour chaque exercice
+ * Logo
+ * Site web
+ * Machintosh
+ * Introduction Pyzzle
+ *
+ * - Gros trucs -
+ *
+ * Playtesting
+ * Éditeur d'énoncés
+ * Améliorations graphiques
+ * Beaucoup beaucoup plus de packs d'exercices
+ *
+ * - Bugs -
+ *
+ * Manque de contrôle d'erreurs
  * Caractères spéciaux
  * Changement de disposition de fenêtre à chaque exercice
  *

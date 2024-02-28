@@ -16,6 +16,7 @@ public class FilePaths {
     private final String tempPy;
     private final String packFolder;
     private final String settingsPath;
+    private final String idsPath;
     private final boolean isLinux;
 
     private static FilePaths instance = null;
@@ -60,6 +61,7 @@ public class FilePaths {
         packFolder = localFilesPath + "Packs/";
 
         settingsPath = "settings.json";
+        idsPath = "info";
     }
 
     public File getLogFile() {
@@ -76,6 +78,10 @@ public class FilePaths {
 
     public File getSettingsFile() {
         return new File(settingsPath);
+    }
+
+    public File getIdsFile() {
+        return new File(idsPath);
     }
 
     public String getExecutePyPath() {

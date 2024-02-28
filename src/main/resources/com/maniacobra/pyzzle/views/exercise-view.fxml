@@ -124,7 +124,7 @@
               <items>
                   <VBox alignment="CENTER">
                      <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Résultats attendus" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="[Objectif] Reproduire ces résultats :" />
                         <ScrollPane focusTraversable="false" VBox.vgrow="ALWAYS">
                            <content>
                               <TextFlow fx:id="textFlowObjectives" />

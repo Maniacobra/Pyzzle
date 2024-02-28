@@ -57,7 +57,7 @@ public class AppSettings {
         jsonObject.put("autoSave", autoSave);
         jsonObject.put("dragAndDrop", dragAndDrop);
         jsonObject.put("autoArgs", autoArgs);
-        jsonObject.put("lastOpened", lastOpenedPath);
+        jsonObject.put("lastOpenedPath", lastOpenedPath);
 
         JSONArray jsonArray = new JSONArray();
         jsonArray.addAll(terminalArgs);
@@ -111,6 +111,7 @@ public class AppSettings {
             dragAndDrop = getBool(jsonObject, "dragAndDrop", dragAndDrop);
             autoArgs = getBool(jsonObject, "autoArgs", autoArgs);
             lastOpenedPath = getString(jsonObject, "lastOpenedPath", lastOpenedPath);
+            System.out.println(lastOpenedPath);
 
             terminalArgs.clear();
             JSONArray jsonArray = (JSONArray) jsonObject.get("terminalArgs");

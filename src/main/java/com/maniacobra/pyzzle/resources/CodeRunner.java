@@ -211,13 +211,13 @@ public class CodeRunner {
         String contentIntro = String.format("Erreur de type '%s' à la ligne %d", errorType, errorLines.peek());
         String content = switch (errorType) {
             case "SyntaxError" ->
-                    "Erreur de syntaxe :\nCette erreur se produit lorsque votre code est mal formaté,\nvérifiez les opérateurs, le positionnement\ndes mot-clés et les sauts de ligne.\nVotre code n'a pas pu s'exécuter.\n(Notez que la ligne identifiée de l'erreur n'est pas\ntoujours celle qui cause problème.)";
+                    "Erreur de syntaxe :\nCette erreur se produit lorsque votre code est mal formaté, vérifiez les opérateurs, le positionnement des mot-clés et les sauts de ligne. Votre code n'a pas pu s'exécuter.\n(Notez que la ligne identifiée de l'erreur n'est pas toujours celle qui cause problème.)";
             case "IndentationError" ->
                     "Erreur d'indentation :\nCette erreur se produit lorsque votre code contient des tabulations positionnées ou manquantes, votre code n'a pas pu s'exécuter.";
             case "NameError" ->
-                    "Erreur de nom :\nCette erreur se produit lorsque votre code essaie de\nrécupérer la valeur d'une variable qui n'existe pas.";
+                    "Erreur de nom :\nCette erreur se produit lorsque votre code essaie de récupérer la valeur d'une variable qui n'existe pas.";
             case "TypeError" ->
-                    "Erreur de type :\nCette erreur se produit lorsque votre code essaie d'effectuer\nune opération sur une variable du mauvais type.";
+                    "Erreur de type :\nCette erreur se produit lorsque votre code essaie d'effectuer une opération sur une variable du mauvais type.";
             default -> "Vérifiez votre code.";
         };
         Popups.showPopup(title, contentIntro, content);

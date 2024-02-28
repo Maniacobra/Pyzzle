@@ -1,6 +1,10 @@
 {
   "file_type": "pack",
   "pyzzle_version": "indev",
+  "pack_name": "Opérateurs logiques",
+  "author": "Maniacobra (dev)",
+  "strict_mode": 0,
+  "uuid": "TEST2",
   "exercises": [
     {
       "name": "Booléens",

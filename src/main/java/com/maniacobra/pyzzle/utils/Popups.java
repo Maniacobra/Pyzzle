@@ -12,7 +12,36 @@ import javafx.stage.Stage;
 
 public class Popups {
 
+    private static int CHARS_FOR_BREAK = 55;
+    private static int WIN_WIDTH = 450;
+
     public static void showPopup(String title, String contentIntro, String content) {
+
+        // String process
+        int lineBreakCount = 0;
+        int charCount = 0;
+        StringBuilder strBuilder = new StringBuilder();
+        String[] splitted = content.split(" ");
+        for (String word : splitted) {
+            charCount += word.length();
+            strBuilder.append(word);
+            if (word.contains("\n")) {
+                String[] spltWord = word.split("\n");
+                charCount = spltWord[1].length();
+                lineBreakCount++;
+            }
+            if (charCount > CHARS_FOR_BREAK) {
+                strBuilder.append("\n");
+                charCount = 0;
+                lineBreakCount++;
+            }
+            else {
+                strBuilder.append(" ");
+                charCount++;
+            }
+        }
+
+        // Window
 
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
@@ -21,7 +50,7 @@ public class Popups {
 
         Label label1 = new Label(contentIntro);
         label1.setFont(Font.font("Arial", FontWeight.BOLD, label1.getFont().getSize()));
-        Label label2 = new Label(content);
+        Label label2 = new Label(strBuilder.toString());
         Button button = new Button("OK");
 
         button.setOnAction(e -> window.close());
@@ -30,8 +59,8 @@ public class Popups {
         layout.getChildren().addAll(label1, label2, button);
         layout.setAlignment(Pos.CENTER);
 
-        int width = 400;
-        int height = content.split("\n").length * 30 + 60;
+        int width = WIN_WIDTH;
+        int height = lineBreakCount * 30 + 60;
         Scene scene = new Scene(layout, width, height);
         window.setScene(scene);
         window.showAndWait();

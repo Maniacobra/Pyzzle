@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/hamon/Documents/GitHub/Pyzzle/./.py/execute.py", line 25, in <module>
+    import temp
+  File "/home/hamon/Documents/GitHub/Pyzzle/.py/temp.py", line 3
+    	if var1 == var2 :
+    	                 ^
+IndentationError: expected an indented block after 'if' statement on line 3

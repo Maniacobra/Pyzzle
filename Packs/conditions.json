@@ -1,0 +1,106 @@
+{
+  "file_type": "pack",
+  "pyzzle_version": "indev",
+  "pack_name": "Conditions : 'if', 'elif' et 'else'",
+  "author": "Maniacobra (dev)",
+  "strict_mode": 0,
+  "uuid": "TEST4",
+  "exercises": [
+    {
+      "name": "Mot-clé 'if'",
+      "coef": 1.0,
+      "attempts": -1,
+      "inputs": [
+        "var1",
+        "var2"
+      ],
+      "datasets": [
+        [
+          3,
+          3
+        ],
+        [
+          10,
+          5
+        ],
+        [
+          15,
+          15
+        ],
+        [
+          8,
+          7
+        ]
+      ],
+      "objectives": [
+        [
+          "Les deux variables sont égales"
+        ],
+        [
+          "(vide)"
+        ],
+        [
+          "Les deux variables sont égales"
+        ],
+        [
+          "(vide)"
+        ]
+      ],
+      "words": [
+        [
+          {
+            "type": "TABULATION",
+            "text": "\t",
+            "usages": 1,
+            "id": 0
+          },
+          {
+            "type": "OPERATOR",
+            "text": ":",
+            "usages": 1,
+            "id": 1
+          }
+        ],
+        [
+          {
+            "type": "KEYWORD",
+            "text": "if",
+            "usages": 1,
+            "id": 2
+          }
+        ],
+        [
+          {
+            "type": "GROUP",
+            "text": "var1 == var2",
+            "usages": 1,
+            "id": 3
+          }
+        ],
+        [
+          {
+            "type": "GROUP",
+            "text": "print(\"Les deux variables sont égales\")",
+            "usages": 1,
+            "id": 4
+          }
+        ]
+      ],
+      "solution": [
+        [ 2, 3, 1 ],
+        [ 0, 4 ]
+      ]
+    },
+    {
+      "name": "Valeur absolue",
+      "coef": 1.0,
+      "attempts": -1,
+      "inputs": [
+        "var"
+      ],
+      "datasets": [
+        5,
+      ]
+    }
+  ]
+}
