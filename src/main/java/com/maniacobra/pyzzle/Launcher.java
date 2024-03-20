@@ -31,3 +31,39 @@ public class Launcher {
         PyzzleMain.main(args);
     }
 }
+
+/* TO-DO
+ *
+ * === TO-DO PROTOTYPE ===
+ *
+ * Exo conditions
+ *
+ * Analyze des notes
+ *
+ * Build release
+ *
+ * === POST PROTOTYPE ===
+ *
+ * - Petits trucs -
+ *
+ * Bulles d'aide pour chaque exercice
+ * Logo
+ * Site web
+ * Machintosh
+ * Introduction Pyzzle
+ *
+ * - Gros trucs -
+ *
+ * Playtesting
+ * Éditeur d'énoncés
+ * Améliorations graphiques
+ * Beaucoup beaucoup plus de packs d'exercices
+ * Page d'accueil
+ *
+ * - Bugs -
+ *
+ * Manque de contrôle d'erreurs
+ * Caractères spéciaux
+ * Changement de disposition de fenêtre à chaque exercice
+ *
+ */

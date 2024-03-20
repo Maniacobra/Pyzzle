@@ -32,12 +32,11 @@
             <Button mnemonicParsing="false" onAction="#menuAbout" styleClass="mbutton" text="À propos" />
          </items>
       </ToolBar>
-
    </top>
    <bottom>
       <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Mode exercice" HBox.hgrow="ALWAYS">
+            <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Pyzzle" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="11.0" fx:id="x3" />
                </font>
@@ -46,7 +45,7 @@
                </textFill>
             </Label>
             <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-            <Label font="$x3" maxWidth="-1.0" text="Pyzzle" textFill="$x4" HBox.hgrow="NEVER" />
+            <Label font="$x3" maxWidth="-1.0" text="Prototype 1.0" textFill="$x4" HBox.hgrow="NEVER" />
          </children>
          <padding>
             <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />

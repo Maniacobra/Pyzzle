@@ -27,15 +27,10 @@
       </Label>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
          <children>
-            <Button mnemonicParsing="false" text="Ouvrir le dernier élément" />
-         </children>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
-      </HBox>
-      <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
-         <children>
-            <Button fx:id="buttonIntro" mnemonicParsing="false" text="Introduction à Pyzzle" />
+            <Button fx:id="buttonContinue" mnemonicParsing="false" onAction="#openLastFile" prefHeight="110.0" prefWidth="260.0" text="Ouvrir le dernier élément">
+               <font>
+                  <Font size="18.0" />
+               </font></Button>
          </children>
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -43,7 +38,10 @@
       </HBox>
       <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
-            <Button mnemonicParsing="false" onAction="#menuOpenFile" text="Démarrer une série d'exercices" />
+            <Button mnemonicParsing="false" onAction="#menuOpenFile" prefHeight="110.0" prefWidth="260.0" text="Ouvrir un pack">
+                <font>
+                    <Font size="18.0" />
+                </font></Button>
          </children>
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -51,7 +49,10 @@
       </HBox>
       <HBox alignment="CENTER" layoutX="310.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
          <children>
-            <Button mnemonicParsing="false" text="Corriger des fichiers" />
+            <Button mnemonicParsing="false" onAction="#menuAnalysis" prefHeight="110.0" prefWidth="260.0" text="Corriger des fichiers">
+                <font>
+                    <Font size="18.0" />
+                </font></Button>
          </children>
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -59,7 +60,10 @@
       </HBox>
       <HBox alignment="CENTER" layoutX="10.0" layoutY="144.0" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <children>
-            <Button mnemonicParsing="false" text="Modifier des exercices" />
+            <Button mnemonicParsing="false" onAction="#editorInfos" prefHeight="110.0" prefWidth="260.0" text="Modifier des exercices">
+                <font>
+                    <Font size="18.0" />
+                </font></Button>
          </children>
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

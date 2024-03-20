@@ -187,14 +187,18 @@ public class CodeRunner {
                 System.out.println("[ERROR] Empty results for Python execution");
                 return FATAL;
             }
-            while (lineNum < objective.size()) {
-                if (result != WRONG) {
-                    result = INCOMPLETE;
-                    dsDeclaration.setFill(AppStyle.Colors.resultWrong);
-                }
-                addToTextFlow(consoleText, "(vide)\n", AppStyle.Colors.resultEmpty, false);
-                lineNum++;
+            if (result != OVERFLOW && objective.isEmpty()) {
+                addToTextFlow(consoleText, "(vide)\n", AppStyle.Colors.resultEmptyCorrect, false);
             }
+            else
+                while (lineNum < objective.size()) {
+                    if (result != WRONG) {
+                        result = INCOMPLETE;
+                        dsDeclaration.setFill(AppStyle.Colors.resultWrong);
+                    }
+                    addToTextFlow(consoleText, "(vide)\n", AppStyle.Colors.resultEmpty, false);
+                    lineNum++;
+                }
             addToTextFlow(consoleText, "\n");
         } catch (Exception e) {
             e.printStackTrace(Launcher.output);
@@ -220,7 +224,7 @@ public class CodeRunner {
                     "Erreur de type :\nCette erreur se produit lorsque votre code essaie d'effectuer une opération sur une variable du mauvais type.";
             default -> "Vérifiez votre code.";
         };
-        Popups.showPopup(title, contentIntro, content);
+        Popups.showPopup(title, contentIntro, content, 450, 14, 55);
     }
 
     public boolean pythonTest() {
@@ -279,7 +283,6 @@ public class CodeRunner {
 
         if (workingCommand != null)
             return workingCommand;
-        String osName = System.getProperty("os.name").toLowerCase();
 
         // POSSIBLE COMMANDS
 

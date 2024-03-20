@@ -1,7 +1,7 @@
 package com.maniacobra.pyzzle.properties;
 
 public class AppProperties {
-    public static final boolean debugMode = false;
+    public static final boolean debugMode = true;
     public static final boolean logEnabled = false;
 
     public static final String name = "Pyzzle";

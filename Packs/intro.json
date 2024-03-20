@@ -3,8 +3,8 @@
   "pyzzle_version": "indev",
   "pack_name": "Introduction à Pyzzle et Python",
   "author": "Maniacobra (dev)",
-  "strict_mode": 0,
-  "uuid": "TEST",
+  "strict_mode": 2,
+  "uuid": "765cf635-7d94-4e12-9a6c-e4091d9acca1",
   "exercises": [
     {
       "name": "Hello World",

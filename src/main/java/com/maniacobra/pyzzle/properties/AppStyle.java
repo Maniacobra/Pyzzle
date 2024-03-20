@@ -19,6 +19,7 @@ public class AppStyle {
         public static final Color resultWrong = Color.RED;
         public static final Color resultUnperfect = Color.DARKORANGE;
         public static final Color resultEmpty = Color.DARKSALMON;
+        public static final Color resultEmptyCorrect = Color.DARKGRAY;
         public static final Color resultError = Color.PURPLE;
 
         // Texts

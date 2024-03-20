@@ -47,8 +47,20 @@ public class PyzzFileManager {
         return new SecretKeySpec(key, "AES");
     }
 
-    public String readNormal(File file) throws IOException {
+    public void writeNormal(File file, String content) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        for (char c : content.toCharArray()) {
+            builder.append(c);
+            switch (c) {
+                case ',', '{', '}', '[', ']' -> builder.append('\n');
+            }
+        }
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(builder.toString());
+        }
+    }
 
+    public String readNormal(File file) throws IOException {
         String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
         String[] path = file.getAbsolutePath().split("\\.");
         // Auto encode

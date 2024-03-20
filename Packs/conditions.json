@@ -4,7 +4,7 @@
   "pack_name": "Conditions : 'if', 'elif' et 'else'",
   "author": "Maniacobra (dev)",
   "strict_mode": 0,
-  "uuid": "TEST4",
+  "uuid": "3ef035b4-e05e-4f3a-a31c-c1aefd4e735a",
   "exercises": [
     {
       "name": "Mot-clé 'if'",
@@ -36,15 +36,11 @@
         [
           "Les deux variables sont égales"
         ],
-        [
-          "(vide)"
-        ],
+        [],
         [
           "Les deux variables sont égales"
         ],
-        [
-          "(vide)"
-        ]
+        []
       ],
       "words": [
         [
@@ -92,14 +88,110 @@
       ]
     },
     {
-      "name": "Valeur absolue",
+      "name": "Calcul de la valeur absolue",
       "coef": 1.0,
       "attempts": -1,
       "inputs": [
         "var"
       ],
       "datasets": [
-        5,
+        [
+          5
+        ],
+        [
+          -3
+        ],
+        [
+          -1
+        ],
+        [
+          8
+        ]
+      ],
+      "objectives": [
+        [
+          5
+        ],
+        [
+          3
+        ],
+        [
+          1
+        ],
+        [
+          8
+        ]
+      ],
+      "words": [
+        [
+          {
+            "type": "OPERATOR",
+            "text": "<",
+            "usages": 1,
+            "id": 0
+          },
+          {
+            "type": "OPERATOR",
+            "text": "=",
+            "usages": 1,
+            "id": 1
+          },
+          {
+            "type": "OPERATOR",
+            "text": "-",
+            "usages": 1,
+            "id": 2
+          },
+          {
+            "type": "OPERATOR",
+            "text": ":",
+            "usages": 1,
+            "id": 3
+          },
+          {
+            "type": "TABULATION",
+            "text": "\t",
+            "usages": 1,
+            "id": 4
+          }
+        ],
+        [
+          {
+            "type": "KEYWORD",
+            "text": "if",
+            "usages": 1,
+            "id": 5
+          }
+        ],
+        [
+          {
+            "type": "GROUP",
+            "text": "print(var)",
+            "usages": 1,
+            "id": 6
+          }
+        ],
+        [
+          {
+            "type": "VARIABLE",
+            "text": "var",
+            "usages": 3,
+            "id": 7
+          }
+        ],
+        [
+          {
+            "type": "VALUE",
+            "text": "0",
+            "usages": 1,
+            "id": 8
+          }
+        ]
+      ],
+      "solution": [
+        [ 5, 7, 0, 8, 3 ],
+        [ 4, 7, 1, 2, 7 ],
+        [ 6 ]
       ]
     }
   ]

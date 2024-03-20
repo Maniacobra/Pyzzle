@@ -6,9 +6,12 @@ import com.maniacobra.pyzzle.resources.CodeRunner;
 import com.maniacobra.pyzzle.models.ExerciseManager;
 import com.maniacobra.pyzzle.properties.AppProperties;
 import com.maniacobra.pyzzle.resources.PyzzAnalyzer;
+import com.maniacobra.pyzzle.utils.Popups;
+import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.PyzzleMain;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
@@ -18,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -31,8 +35,6 @@ public class MainController {
     private MenuItem menuItemSave;
     @FXML
     private MenuItem menuItemQuickSave;
-    @FXML
-    private Button buttonIntro;
     @FXML
     private Button buttonContinue;
 
@@ -83,7 +85,10 @@ public class MainController {
         fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("Fichier Pyzzle ouvert", List.of(AppProperties.openedExtension)));
         List<File> files = fileChooser.showOpenMultipleDialog(Stage.getWindows().get(0));
         if (!files.isEmpty()) {
-            PyzzAnalyzer.getInstance().AnalyzeFiles(files);
+            if (!PyzzAnalyzer.getInstance().AnalyzeFiles(files)) {
+                Utils.systemAlert(Alert.AlertType.ERROR, "Erreur de l'analyse",
+                        "Impossible de sauvegarder le fichier .csv ou l'analyse a échouée pour tous les fichiers.");
+            }
         }
     }
 
@@ -112,7 +117,41 @@ public class MainController {
 
     @FXML
     public void menuAbout() {
-        System.out.println("Ok About");
+        Popups.showPopup("À propos", "Pyzzle par Maniacobra", """
+                
+                Version Prototype 1.0
+                [date]
+                
+                Site web : https://maniacobra.com
+                Contact mail : maniacobra@orange.fr
+                
+                Logiciel programmé en Java (JavaFX), avec intégration d'interpréteur Python.
+                
+                Ce programme est la version prototype d'un concept de logiciel éducatif pour apprendre le Python.
+                La version complète du logiciel requiert de nombreuses nouveautés et améliorations, le développement est à ce jour interrompu.
+                
+                Consultez https://maniacobra.com/pyzzle pour vérifier s'il existe une mise à jour.
+                """, 550, 16, 55);
+    }
+
+    @FXML
+    public void editorInfos() {
+        Popups.showPopup("Informations sur l'éditeur", "Pyzzle ne propose pas encore d'éditeur graphique", """
+                
+                La création et modification d'exercices peut se faire via l'écriture de fichiers au format .json, qui sont convertis en .pyzl par Pyzzle à leur chargement.
+                
+                Allez sur le site maniacobra.com/pyzzle et téléchargez le pack de fichiers .pyzzle
+                """, 650, 16, 65);
+    }
+
+    @FXML
+    public void openLastFile() {
+        if (AppSettings.getInstance().lastOpenedPath == null)
+            return;
+
+        File file = new File(AppSettings.getInstance().lastOpenedPath);
+        if (manager.openFile(file, borderPane))
+            updateFileMenu();
     }
 
     public void initialize() {
@@ -122,13 +161,7 @@ public class MainController {
                 updateFileMenu();
 
         // Welcome
-        if (AppSettings.getInstance().lastOpenedPath != null) {
-            if (buttonIntro != null)
-                buttonIntro.setVisible(false);
-        }
-        else {
-            if (buttonContinue != null)
-                buttonContinue.setVisible(false);
-        }
+        if (AppSettings.getInstance().lastOpenedPath == null && buttonContinue != null)
+            buttonContinue.setDisable(true);
     }
 }

@@ -78,8 +78,11 @@ public class ExerciseModel {
         int i = 0;
         for (List<String> objective : objectives) {
             nodes.objectivesText().getChildren().add(getDsDeclaration(i));
-            for (String line : objective)
-                addToTextFlow(nodes.objectivesText(), line + '\n');
+            if (objective.isEmpty())
+                addToTextFlow(nodes.objectivesText(), "(vide)\n");
+            else
+                for (String line : objective)
+                    addToTextFlow(nodes.objectivesText(), line + '\n');
             addToTextFlow(nodes.objectivesText(), "\n");
             i++;
         }

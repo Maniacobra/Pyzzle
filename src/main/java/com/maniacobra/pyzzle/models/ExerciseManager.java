@@ -43,7 +43,7 @@ public class ExerciseManager {
     private String packFileName;
     private String authorName;
     private String userName;
-    private int strictMode;
+    private int strictMode; // 1 = Force fichier de sauvegarde ; 2 = Mode exam (verouille le nom et auto-save)
     private String uuid;
 
     // Pack completion memory
@@ -183,6 +183,7 @@ public class ExerciseManager {
         if (loadedData == null || saveFile == null)
             return false;
 
+        assert currentController != null;
         savedCompletion.put(currentController.getModel().getExerciseNumber(), currentController.getModel().getJson());
 
         // Make json
@@ -207,6 +208,8 @@ public class ExerciseManager {
         data.put("completion", completion);
         try {
             PyzzFileManager.getInstance().encode(saveFile, data.toJSONString());
+            if (AppProperties.debugMode)
+                PyzzFileManager.getInstance().writeNormal(new File("last_save.json"), data.toJSONString());
             AppSettings.getInstance().lastOpenedPath = saveFile.getAbsolutePath();
             return true;
         } catch (Exception e) {
@@ -390,7 +393,7 @@ public class ExerciseManager {
             case UNKNOWN_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Erreur",
                     "Une erreur inconnue, interne au logiciel, s'est produite lors du chagement de l'exercice.");
             case OPENING_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzze : Erreur lors de l'ouverture du fichier",
-                    "Pyzzle n'est pas parvenu à ouvrir ce fichier, vérifiez les permissions du programme et l'accessibilité du fichier.");
+                    "Pyzzle n'est pas parvenu à ouvrir ce fichier, vérifiez les permissions du programme et si le fichier est accessible.");
             case PARSING_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Erreur lors du chargement de l'exercice",
                     "Le fichier semble être corrompu ou de format invalide. Impossible d'ouvrir");
             case DATA_ERROR -> Utils.systemAlert(Alert.AlertType.ERROR, "Pyzzle : Erreur lors du chargement de l'exercice",
