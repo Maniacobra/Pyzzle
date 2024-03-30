@@ -80,6 +80,7 @@ public class MainController {
 
     @FXML
     public void menuAnalysis() {
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Sélectionnez les fichiers " + AppProperties.openedExtension);
         fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("Fichier Pyzzle ouvert", List.of(AppProperties.openedExtension)));

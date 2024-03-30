@@ -100,6 +100,7 @@ public class IntroController {
     public void startPack() {
         updateSettings();
         manager.startFirstExercise();
+        manager.displayHelpIfIntro();
     }
 
     private void updateSettings() {

@@ -37,8 +37,7 @@ public class Launcher {
  * === TO-DO PROTOTYPE ===
  *
  * Exo conditions
- *
- * Analyze des notes
+ * Exo exam
  *
  * Build release
  *

@@ -13,7 +13,7 @@ public class Utils {
         if ((int) nb == nb)
             return String.valueOf((int) nb);
         else {
-            String[] splitted = String.valueOf(nb).split(",");
+            String[] splitted = String.valueOf(nb).split("\\.");
             if (splitted.length < 2)
                 return String.valueOf(nb);
             String decimal = splitted[1];

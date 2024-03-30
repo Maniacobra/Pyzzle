@@ -7,6 +7,7 @@ import com.maniacobra.pyzzle.properties.AppProperties;
 import com.maniacobra.pyzzle.properties.AppSettings;
 import com.maniacobra.pyzzle.resources.IdsRegistry;
 import com.maniacobra.pyzzle.resources.PyzzFileManager;
+import com.maniacobra.pyzzle.utils.Popups;
 import com.maniacobra.pyzzle.utils.Utils;
 import com.maniacobra.pyzzle.views.PyzzleMain;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ExerciseManager {
 
@@ -44,7 +46,8 @@ public class ExerciseManager {
     private String authorName;
     private String userName;
     private int strictMode; // 1 = Force fichier de sauvegarde ; 2 = Mode exam (verouille le nom et auto-save)
-    private String uuid;
+    private String uuidStr;
+    private boolean isIntro;
 
     // Pack completion memory
     private JSONObject loadedData = null;
@@ -77,7 +80,8 @@ public class ExerciseManager {
         authorName = null;
         userName = null;
         strictMode = 0;
-        uuid = "-";
+        uuidStr = "-";
+        isIntro = false;
     }
 
     public boolean openFile(File file, BorderPane mainPane) {
@@ -193,7 +197,7 @@ public class ExerciseManager {
         completion.put("total_score", currentController.getModel().getTotalScore());
         completion.put("last_panel", currentController.getModel().getExerciseNumber());
         completion.put("user_name", userName);
-        completion.put("attempt", IdsRegistry.getInstance().getCount(uuid));
+        completion.put("attempt", IdsRegistry.getInstance().getCount(uuidStr));
 
         // Completed exercises
         JSONArray completedExercises = new JSONArray();
@@ -250,6 +254,18 @@ public class ExerciseManager {
             this.userName = userName;
     }
 
+    public void displayHelpIfIntro() {
+        if (!isIntro)
+            return;
+        Popups.showPopup("Aide Pyzzle", "Bienvenue sur Pyzzle !", """
+                
+                Utilisez les blocs disponibles pour construire votre programme afin que le résultat de son exécution soit identique à la zone "Objectifs".
+                
+                Utilisez le clic gauche pour glisser-déposer les blocs, ou clic droit pour directement les envoyer d'une zone à une autre.
+                Shift + clic droit sur un bloc disponible pour rapidement faire un retour à la ligne.
+                """, 550, 14, 55);
+    }
+
     public boolean isExamMode() {
         return strictMode >= 2;
     }
@@ -268,10 +284,10 @@ public class ExerciseManager {
 
         resetPack();
 
+        isIntro = false;
         int starting = 0;
         float totalScore = 0.f;
         JSONObject exerciseCompletion = null;
-
         try {
             loadedData = jsonData;
             // Infos
@@ -279,8 +295,11 @@ public class ExerciseManager {
             authorName = jsonData.get("author").toString();
             strictMode = Utils.getInt(jsonData, "strict_mode");
             // UUID
-            uuid = jsonData.get("uuid").toString();
-            IdsRegistry.getInstance().incrementId(uuid);
+            uuidStr = jsonData.get("uuid").toString();
+            UUID uuid = UUID.fromString(uuidStr);
+            if (uuid.equals(AppProperties.introUUID))
+                isIntro = true;
+            IdsRegistry.getInstance().incrementId(uuidStr);
             // Load exercises
             maxScore = 0;
             for (Object obj : (JSONArray) jsonData.get("exercises")) {
@@ -370,7 +389,7 @@ public class ExerciseManager {
         FXMLLoader fxmlLoader = new FXMLLoader(PyzzleMain.class.getResource("intro-view.fxml"));
         introPane = fxmlLoader.load();
         IntroController controller = fxmlLoader.getController();
-        controller.init(this, packName, authorName, strictMode > 0, strictMode >= 2, IdsRegistry.getInstance().getCount(uuid));
+        controller.init(this, packName, authorName, strictMode > 0, strictMode >= 2, IdsRegistry.getInstance().getCount(uuidStr));
         borderPane.setCenter(introPane);
     }
 
