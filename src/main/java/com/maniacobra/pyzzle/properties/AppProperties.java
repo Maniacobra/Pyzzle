@@ -3,11 +3,11 @@ package com.maniacobra.pyzzle.properties;
 import java.util.UUID;
 
 public class AppProperties {
-    public static final boolean debugMode = true;
-    public static final boolean logEnabled = false;
+    public static final boolean debugMode = false;
+    public static final boolean logEnabled = true;
 
     public static final String name = "Pyzzle";
-    public static final String version = "indev";
+    public static final String version = "Prototype 1.0";
 
     public static final String extension = "pyzl";
     public static final String openedExtension = "spyzl";

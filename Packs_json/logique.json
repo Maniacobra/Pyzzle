@@ -1,0 +1,541 @@
+{
+  "file_type": "pack",
+  "pyzzle_version": "Prototype 1.0",
+  "pack_name": "Opérateurs logiques",
+  "author": "Maniacobra (dev)",
+  "strict_mode": 0,
+  "uuid": "c22e50e1-d6cc-494b-a4a1-a23f5bfe7435",
+  "exercises": [
+    {
+      "name": "Booléens",
+      "coef": 1.0,
+      "attempts": -1,
+      "inputs": [
+        "var"
+      ],
+      "datasets": [
+        [
+          "False"
+        ],
+        [
+          "True"
+        ],
+        [
+          "False"
+        ]
+      ],
+      "objectives": [
+        [
+          "True"
+        ],
+        [
+          "False"
+        ],
+        [
+          "True"
+        ]
+      ],
+      "words": [
+        [
+          {
+            "type": "OPERATOR",
+            "text": "=",
+            "usages": 1,
+            "id": 0
+          },
+          {
+            "type": "OPERATOR",
+            "text": "not",
+            "usages": 1,
+            "id": 1
+          }
+        ],
+        [
+          {
+            "type": "GROUP",
+            "text": "print ( a )",
+            "usages": 1,
+            "id": 2
+          }
+        ],
+        [
+          {
+            "type": "VARIABLE",
+            "text": "a",
+            "usages": 1,
+            "id": 3
+          },
+          {
+            "type": "INPUT",
+            "text": "var",
+            "usages": 1,
+            "id": 4
+          }
+        ]
+      ],
+      "solution": [
+        [
+          3, 0, 1, 4
+        ],
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "name": "Comparaison",
+      "coef": 1.0,
+      "attempts": -1,
+      "inputs": [
+        "var1",
+        "var2"
+      ],
+      "datasets": [
+        [
+          "9",
+          "4"
+        ],
+        [
+          "1",
+          "5"
+        ],
+        [
+          "20",
+          "19"
+        ]
+      ],
+      "objectives": [
+        [
+          "True"
+        ],
+        [
+          "False"
+        ],
+        [
+          "True"
+        ]
+      ],
+      "words": [
+        [
+          {
+            "type": "OPERATOR",
+            "text": ">",
+            "usages": 1,
+            "id": 0
+          },
+          {
+            "type": "OPERATOR",
+            "text": "=",
+            "usages": 1,
+            "id": 1
+          }
+        ],
+        [
+          {
+            "type": "GROUP",
+            "text": "print ( a )",
+            "usages": 1,
+            "id": 2
+          }
+        ],
+        [
+          {
+            "type": "VARIABLE",
+            "text": "a",
+            "usages": 1,
+            "id": 3
+          },
+          {
+            "type": "INPUT",
+            "text": "var1",
+            "usages": 1,
+            "id": 4
+          },
+          {
+            "type": "INPUT",
+            "text": "var2",
+            "usages": 1,
+            "id": 5
+          }
+        ]
+      ],
+      "solution": [
+        [
+          3, 1, 4, 0, 5
+        ],
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "name": "Inégalités",
+      "coef": 1.0,
+      "attempts": -1,
+      "inputs": [
+        "var"
+      ],
+      "datasets": [
+        [
+          "3"
+        ],
+        [
+          "10"
+        ],
+        [
+          "10"
+        ],
+        [
+          "7"
+        ]
+      ],
+      "objectives": [
+        [
+          "True"
+        ],
+        [
+          "False"
+        ],
+        [
+          "False"
+        ],
+        [
+          "True"
+        ]
+      ],
+      "words": [
+        [
+          {
+            "type": "OPERATOR",
+            "text": "(",
+            "usages": 1,
+            "id": 0
+          },
+          {
+            "type": "OPERATOR",
+            "text": ")",
+            "usages": 1,
+            "id": 1
+          },
+          {
+            "type": "OPERATOR",
+            "text": "!=",
+            "usages": 1,
+            "id": 2
+          }
+        ],
+        [
+          {
+            "type": "FUNCTION",
+            "text": "print",
+            "usages": 1,
+            "id": 3
+          }
+        ],
+        [
+          {
+            "type": "INPUT",
+            "text": "var",
+            "usages": 1,
+            "id": 4
+          }
+        ],
+        [
+          {
+            "type": "VALUE",
+            "text": "10",
+            "usages": 1,
+            "id": 5
+          }
+        ]
+      ],
+      "solution": [
+        [
+          3, 0, 4, 2, 5, 1
+        ]
+      ]
+    },
+    {
+      "name": "Porte logique 'OU'",
+      "coef": 1.0,
+      "attempts": -1,
+      "inputs": [
+        "var1",
+        "var2"
+      ],
+      "datasets": [
+        [
+          "True",
+          "True"
+        ],
+        [
+          "True",
+          "False"
+        ],
+        [
+          "False",
+          "True"
+        ],
+        [
+          "False",
+          "False"
+        ]
+      ],
+      "objectives": [
+        [
+          "True"
+        ],
+        [
+          "True"
+        ],
+        [
+          "True"
+        ],
+        [
+          "False"
+        ]
+      ],
+      "words": [
+        [
+          {
+            "type": "OPERATOR",
+            "text": "(",
+            "usages": 1,
+            "id": 0
+          },
+          {
+            "type": "OPERATOR",
+            "text": ")",
+            "usages": 1,
+            "id": 1
+          },
+          {
+            "type": "OPERATOR",
+            "text": "or",
+            "usages": 1,
+            "id": 2
+          }
+        ],
+        [
+          {
+            "type": "FUNCTION",
+            "text": "print",
+            "usages": 1,
+            "id": 3
+          }
+        ],
+        [
+          {
+            "type": "INPUT",
+            "text": "var1",
+            "usages": 1,
+            "id": 4
+          },
+          {
+            "type": "INPUT",
+            "text": "var2",
+            "usages": 1,
+            "id": 5
+          }
+        ]
+      ],
+      "solution": [
+        [
+          3, 0, 4, 2, 5, 1
+        ]
+      ]
+    },
+    {
+      "name": "Vrai et inférieur ou égal à 10",
+      "coef": 1.0,
+      "attempts": -1,
+      "inputs": [
+        "var1",
+        "var2"
+      ],
+      "datasets": [
+        [
+          "True",
+          "4"
+        ],
+        [
+          "False",
+          "8"
+        ],
+        [
+          "True",
+          "10"
+        ],
+        [
+          "True",
+          "15"
+        ],
+        [
+          "False",
+          "11"
+        ]
+      ],
+      "objectives": [
+        [
+          "True"
+        ],
+        [
+          "False"
+        ],
+        [
+          "True"
+        ],
+        [
+          "False"
+        ],
+        [
+          "False"
+        ]
+      ],
+      "words": [
+        [
+          {
+            "type": "OPERATOR",
+            "text": "(",
+            "usages": 1,
+            "id": 0
+          },
+          {
+            "type": "OPERATOR",
+            "text": ")",
+            "usages": 1,
+            "id": 1
+          },
+          {
+            "type": "OPERATOR",
+            "text": "and",
+            "usages": 1,
+            "id": 2
+          }
+        ],
+        [
+          {
+            "type": "FUNCTION",
+            "text": "print",
+            "usages": 1,
+            "id": 3
+          }
+        ],
+        [
+          {
+            "type": "GROUP",
+            "text": "var2 <= 10",
+            "usages": 1,
+            "id": 4
+          }
+        ],
+        [
+          {
+            "type": "INPUT",
+            "text": "var1",
+            "usages": 1,
+            "id": 5
+          }
+        ]
+      ],
+      "solution": [
+        [
+          3, 0, 5, 2, 4, 1
+        ]
+      ]
+    },
+    {
+      "name": "Entre 10 et 20",
+      "coef": 1.0,
+      "attempts": -1,
+      "inputs": [
+        "var"
+      ],
+      "datasets": [
+        [
+          "8"
+        ],
+        [
+          "15"
+        ],
+        [
+          "22"
+        ],
+        [
+          "11"
+        ]
+      ],
+      "objectives": [
+        [
+          "False"
+        ],
+        [
+          "True"
+        ],
+        [
+          "False"
+        ],
+        [
+          "True"
+        ]
+      ],
+      "words": [
+        [
+          {
+            "type": "OPERATOR",
+            "text": "(",
+            "usages": 1,
+            "id": 0
+          },
+          {
+            "type": "OPERATOR",
+            "text": ")",
+            "usages": 1,
+            "id": 1
+          },
+          {
+            "type": "OPERATOR",
+            "text": "<",
+            "usages": 2,
+            "id": 2
+          }
+        ],
+        [
+          {
+            "type": "FUNCTION",
+            "text": "print",
+            "usages": 1,
+            "id": 4
+          }
+        ],
+        [
+          {
+            "type": "INPUT",
+            "text": "var",
+            "usages": 1,
+            "id": 5
+          }
+        ],
+        [
+          {
+            "type": "VALUE",
+            "text": "10",
+            "usages": 1,
+            "id": 6
+          },
+          {
+            "type": "VALUE",
+            "text": "20",
+            "usages": 1,
+            "id": 7
+          }
+        ]
+      ],
+      "solution": [
+        [
+          4, 0, 6, 2, 5, 2, 7, 1
+        ]
+      ]
+    }
+  ]
+}

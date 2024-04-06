@@ -27,6 +27,8 @@ public class FilePaths {
     }
 
     public static FilePaths getInstance() {
+        if (instance == null)
+            instance = new FilePaths();
         return instance;
     }
 

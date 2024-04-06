@@ -87,7 +87,7 @@ public class MainController {
         List<File> files = fileChooser.showOpenMultipleDialog(Stage.getWindows().get(0));
         if (!files.isEmpty()) {
             if (!PyzzAnalyzer.getInstance().AnalyzeFiles(files)) {
-                Utils.systemAlert(Alert.AlertType.ERROR, "Erreur de l'analyse",
+                Utils.systemAlert(Alert.AlertType.ERROR, "Erreur de la correction",
                         "Impossible de sauvegarder le fichier .csv ou l'analyse a échouée pour tous les fichiers.");
             }
         }

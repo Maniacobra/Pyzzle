@@ -25,7 +25,7 @@
             </MenuButton>
             <MenuButton mnemonicParsing="false" onMouseEntered="#updateFileMenu" styleClass="mbutton" text="Outils d'enseignant">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#menuAnalysis" text="Analyser des fichiers de rendus" />
+                  <MenuItem mnemonicParsing="false" onAction="#menuAnalysis" text="Corriger des fichiers de rendus" />
                </items>
             </MenuButton>
             <Button mnemonicParsing="false" onAction="#menuSettings" styleClass="mbutton" text="Préférences" />

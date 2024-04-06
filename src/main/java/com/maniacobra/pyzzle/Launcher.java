@@ -32,16 +32,7 @@ public class Launcher {
     }
 }
 
-/* TO-DO
- *
- * === TO-DO PROTOTYPE ===
- *
- * Exo conditions
- * Exo exam
- *
- * Build release
- *
- * === POST PROTOTYPE ===
+/* TO-DO (post-prototype = probablement jamais)
  *
  * - Petits trucs -
  *
