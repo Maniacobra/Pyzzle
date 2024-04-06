@@ -121,7 +121,7 @@ public class MainController {
         Popups.showPopup("À propos", "Pyzzle par Maniacobra", """
                 
                 Version Prototype 1.0
-                [date]
+                7 Avril 2024
                 
                 Site web : https://maniacobra.com
                 Contact mail : maniacobra@orange.fr

@@ -1,5 +1,5 @@
 - Verif fichiers .pyzl
-- SamplePacks
+- Packs
 - Update execute.py DefaultAppDataFiles
 - Maven clean
 - Maven package
