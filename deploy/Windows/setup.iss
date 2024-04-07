@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Pyzzle"
-#define MyAppVersion "0.1"
+#define MyAppVersion "Prototype 1.0"
 #define MyAppPublisher "Maniacobra"
 #define MyAppURL "https://maniacobra.com/pyzzle"
 #define MyAppExeName "Pyzzle.exe"
@@ -41,10 +41,9 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\hamon\IntelliJ\Pyzzle\deploy\Windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\hamon\IntelliJ\Pyzzle\deploy\Windows\jre\*"; DestDir: "{app}\jre"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\hamon\IntelliJ\Pyzzle\DefaultAppDataFiles\*"; DestDir: "{app}\DefaultAppDataFiles"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\hamon\IntelliJ\Pyzzle\python\*"; DestDir: "{app}\python"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\hamon\Documents\GitHub\Pyzzle\deploy\Windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\hamon\Documents\GitHub\Pyzzle\DefaultAppDataFiles\*"; DestDir: "{app}\DefaultAppDataFiles"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\hamon\Documents\GitHub\Pyzzle\python\*"; DestDir: "{app}\python"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

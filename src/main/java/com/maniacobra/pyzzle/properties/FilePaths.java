@@ -62,8 +62,8 @@ public class FilePaths {
         tempPy = pyFilesPath + "temp.py";
         packFolder = localFilesPath + "Packs/";
 
-        settingsPath = "settings.json";
-        idsPath = "info";
+        settingsPath = localFilesPath + "settings.json";
+        idsPath = localFilesPath + "info";
     }
 
     public File getLogFile() {
