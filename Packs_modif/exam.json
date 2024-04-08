@@ -684,7 +684,7 @@
       ]
     },
     {
-      "name": "Inégalités",
+      "name": "Inegalités",
       "coef": 1.0,
       "attempts": 2,
       "inputs": [
@@ -771,7 +771,7 @@
       ]
     },
     {
-      "name": "Vrai et inférieur ou égal à 10",
+      "name": "Vrai et inférieur ou egal à 10",
       "coef": 1.0,
       "attempts": 2,
       "inputs": [
@@ -1005,7 +1005,7 @@
       ],
       "objectives": [
         [
-          "L'eau est gelée"
+          "L'eau est gelee"
         ],
         [
           "L'eau est chaude"
@@ -1087,7 +1087,7 @@
         [
           {
             "type": "VALUE",
-            "text": "\"L'eau est gelée\"",
+            "text": "\"L'eau est gelee\"",
             "usages": 1,
             "id": 10
           },
@@ -1193,14 +1193,14 @@
         ],
         [
           "var2 est positif",
-          "var1 est divisible par var2 et le résultat est 4.0"
+          "var1 est divisible par var2 et le resultat est 4.0"
         ],
         [
-          "var2 est égal à zéro, une division ou modulo est impossible !"
+          "var2 est egal a zero, une division ou modulo est impossible !"
         ],
         [
           "var2 est positif",
-          "var1 est divisible par var2 et le résultat est 2.0"
+          "var1 est divisible par var2 et le resultat est 2.0"
         ]
       ],
       "words": [
@@ -1259,7 +1259,7 @@
         [
           {
             "type": "GROUP",
-            "text": "print(\"var2 est égal à zéro, une division ou modulo est impossible !\")",
+            "text": "print(\"var2 est egal a zero, une division ou modulo est impossible !\")",
             "usages": 1,
             "id": 8
           }
@@ -1267,7 +1267,7 @@
         [
           {
             "type": "GROUP",
-            "text": "print(\"var1 est divisible par var2 et le résultat est\", resultat)",
+            "text": "print(\"var1 est divisible par var2 et le resultat est\", resultat)",
             "usages": 1,
             "id": 9
           }
